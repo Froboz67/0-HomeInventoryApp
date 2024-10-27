@@ -20,11 +20,12 @@ CREATE TABLE items (
     name varchar(100) NOT NULL,
     category varchar(50),
     purchase_date DATE,
+    purchase_price DECIMAL(10, 2),
     value DECIMAL(10, 2),
-    is_valuable INT, -- boolean
+    is_valuable BOOL, -- boolean
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT PK_item_id PRIMARY KEY (item_id),
     CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
