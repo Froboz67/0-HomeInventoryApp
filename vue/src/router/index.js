@@ -26,8 +26,8 @@ const routes = [
     }
   },
   {
-    path: '/items',
-    name: 'items',
+    path: '/item',
+    name: 'item',
     component: ItemsView,
     meta: {
       requiresAuth: true

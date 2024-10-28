@@ -1,6 +1,6 @@
 BEGIN TRANSACTION;
 
-DROP TABLE IF EXISTS users, rooms;
+DROP TABLE IF EXISTS users, item_rooms, item_documents, item_photos, items, rooms CASCADE;
 
 
 CREATE TABLE users (
@@ -17,15 +17,15 @@ CREATE TABLE users (
 CREATE TABLE items (
     item_id SERIAL, -- primary key constraint
     user_id INT, -- foreign key constraint
-    name varchar(100) NOT NULL,
+    i_name varchar(100) NOT NULL,
     category varchar(50),
     purchase_date DATE,
     purchase_price DECIMAL(10, 2),
-    value DECIMAL(10, 2),
+    i_value DECIMAL(10, 2),
     is_valuable BOOL, -- boolean
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT PK_item_id PRIMARY KEY (item_id),
     CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
