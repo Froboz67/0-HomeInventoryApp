@@ -7,6 +7,7 @@ import LoginView from '../views/LoginView.vue';
 import LogoutView from '../views/LogoutView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import ItemsView from '../views/ItemsView.vue';
+import ListView from '../views/ListView.vue';
 
 /**
  * The Vue Router is used to "direct" the browser to render a specific view component
@@ -29,6 +30,14 @@ const routes = [
     path: '/item',
     name: 'item',
     component: ItemsView,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/list-items',
+    name: 'list-items',
+    component: ListView,
     meta: {
       requiresAuth: true
     }

@@ -6,13 +6,22 @@
         My Items
       </button>
     </div>
+    <div class="buttons">
+      <button
+        class="button-link"
+        v-on:click="$router.push({ name: 'list-items' })"
+      >
+        List my Items
+      </button>
+    </div>
   </div>
 </template>
 
 <script>
-import ItemsPage from "../components/ItemsPage.vue";
+import AddItems from "../components/AddItems.vue";
+import ListItems from "../components/ListItems.vue";
 export default {
-  components: { ItemsPage },
+  components: { ItemsPage: AddItems, ListItems: ListItems },
 };
 </script>
 <style>

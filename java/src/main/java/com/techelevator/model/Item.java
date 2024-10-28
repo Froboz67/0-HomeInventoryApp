@@ -1,8 +1,5 @@
 package com.techelevator.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -10,6 +7,7 @@ import java.time.LocalDate;
 public class Item {
 
     private int itemId;
+    private int userId;
     private String name;
     private String category;
     private LocalDate purchaseDate;
@@ -18,12 +16,14 @@ public class Item {
     private Boolean isValuable;
     private String notes;
 
-    public Item(int itemId) {
-        this.itemId = itemId;
+
+    public Item() {
+
     }
 
-    public Item(int itemId, String name, String category, LocalDate purchaseDate, BigDecimal purchasePrice, BigDecimal value, Boolean isValuable, String notes) {
+    public Item(int itemId, int userId, String name, String category, LocalDate purchaseDate, BigDecimal purchasePrice, BigDecimal value, Boolean isValuable, String notes) {
         this.itemId = itemId;
+        this.userId = userId;
         this.name = name;
         this.category = category;
         this.purchaseDate = purchaseDate;
@@ -39,6 +39,14 @@ public class Item {
 
     public void setItemId(int itemId) {
         this.itemId = itemId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getName() {

@@ -78,11 +78,23 @@ export default {
         .then((response) => {
           if (response.status === 200) {
             alert("item saved successfully!");
+            this.resetForm();
           }
         })
         .catch((errro) => {
           console.log(error);
         });
+    },
+    resetForm() {
+      this.item = {
+        name: "",
+        category: "",
+        purchaseDate: "",
+        purchasePrice: null,
+        value: null,
+        isValuable: false,
+        notes: "",
+      };
     },
   },
 };
