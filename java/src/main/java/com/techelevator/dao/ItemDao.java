@@ -8,7 +8,11 @@ import java.util.List;
 @Component
 public interface ItemDao {
 
-    Item saveItem(Item item, int userId);
+    void saveItem(Item item, int userId);
 
     List<Item> getAllItems(int userId);
+
+    Item updateItem(Item item, int userId);
+
+    Item getItem(int itemId, int userId);
 }

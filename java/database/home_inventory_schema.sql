@@ -11,7 +11,7 @@ CREATE TABLE users (
 	password_hash varchar(200) NOT NULL,
 	role varchar(50) NOT NULL,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP,
 	CONSTRAINT PK_user PRIMARY KEY (user_id)
 );
 CREATE TABLE items (
@@ -25,7 +25,7 @@ CREATE TABLE items (
     is_valuable BOOL, -- boolean
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP,
     CONSTRAINT PK_item_id PRIMARY KEY (item_id),
     CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES users(user_id)
 );

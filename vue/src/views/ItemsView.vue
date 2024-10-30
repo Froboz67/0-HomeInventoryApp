@@ -1,15 +1,15 @@
 <template>
   <div>
-    <items-page></items-page>
+    <add-items></add-items>
   </div>
 </template>
 
 <script>
-import ItemsPage from "../components/AddItems.vue";
+import AddItems from "../components/AddItems.vue";
 
 export default {
   components: {
-    ItemsPage,
+    AddItems,
   },
 };
 </script>

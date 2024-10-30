@@ -3,7 +3,7 @@
     <h1>Home Inventory</h1>
     <div class="buttons">
       <button class="button-link" v-on:click="$router.push({ name: 'item' })">
-        My Items
+        Add Items
       </button>
     </div>
     <div class="buttons">
@@ -11,7 +11,7 @@
         class="button-link"
         v-on:click="$router.push({ name: 'list-items' })"
       >
-        List my Items
+        View my Items
       </button>
     </div>
   </div>

@@ -81,7 +81,7 @@ export default {
             this.resetForm();
           }
         })
-        .catch((errro) => {
+        .catch((error) => {
           console.log(error);
         });
     },
