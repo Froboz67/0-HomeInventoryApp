@@ -27,11 +27,22 @@ public class ItemController {
         User user = userDao.getUserByUsername(principal.getName());
         itemDao.saveItem(item, user.getId());
     }
+    @PostMapping("/update/{itemId}/{userId}")
+    public Item updateItem(@PathVariable int itemId, @PathVariable int userId, @RequestBody Item item, Principal principal) {
+        User user = userDao.getUserByUsername(principal.getName());
+        itemDao.updateItem(item, userId);
+        return new Item();
+    }
 
     @GetMapping("/list-items/{userId}")
     public ItemResponseDTO getItemsList(@PathVariable int userId, Principal principal) {
         User user = userDao.getUserByUsername(principal.getName());
         final List<Item> itemList = this.itemDao.getAllItems(userId);
         return new ItemResponseDTO(itemList);
+    }
+    @GetMapping("/itemdetails/{userId}/{itemId}")
+    public Item getItem(@PathVariable int userId, @PathVariable int itemId, Principal principal) {
+        User user = userDao.getUserByUsername(principal.getName());
+        return itemDao.getItem(itemId, user.getId());
     }
 }

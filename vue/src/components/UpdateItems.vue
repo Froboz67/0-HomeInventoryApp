@@ -1,7 +1,7 @@
 <template>
   <div id="items" class="text-center">
-    <form v-on:submit.prevent="saveItem">
-      <h1>Add Items</h1>
+    <form v-on:submit.prevent="updateItem">
+      <h1>Update Item</h1>
 
       <div class="item-input-group">
         <label for="item-name">Name of Item: </label>
@@ -45,15 +45,17 @@
         <input type="text" id="item-notes" v-model="item.notes" />
       </div>
       <div id="button-links">
-        <button class="button-link" type="submit">Save Item</button>
+        <button class="button-link" type="submit">Save Updated Item</button>
+        <button type="button" class="button-link" v-on:click="cancelEdit">
+          Cancel Return to Items
+        </button>
       </div>
     </form>
   </div>
 </template>
 
 <script>
-import service from "../services/ItemService.js";
-
+import service from "../services/ItemService";
 export default {
   data() {
     return {
@@ -69,38 +71,48 @@ export default {
     };
   },
   methods: {
-    saveItem() {
+    getItem() {
+      const user = this.$store.state.user;
+      console.log("user id: " + user.id);
+      const itemId = this.$route.params.id;
+      console.log("Item id: " + itemId);
+      service.getItem(user.id, itemId).then((response) => {
+        this.item = response.data;
+        console.log(this.item);
+      });
+    },
+    updateItem() {
       if (this.item.purchaseDate) {
         this.item.purchaseDate = new Date(this.item.purchaseDate)
           .toISOString()
           .split("T")[0];
       }
+      const user = this.$store.state.user;
+      console.log("user id: " + user.id);
+      const itemId = this.$route.params.id;
+      console.log("Item id: " + itemId);
       service
-        .saveItem(this.item)
+        .updateItem(user.id, itemId, this.item)
         .then((response) => {
           if (response.status === 200) {
-            alert("item saved successfully!");
-            this.resetForm();
+            alert("item updated successfully!");
           }
         })
         .catch((error) => {
           console.log(error);
         });
     },
-    resetForm() {
-      this.item = {
-        name: "",
-        category: "",
-        purchaseDate: "",
-        purchasePrice: null,
-        value: null,
-        isValuable: false,
-        notes: "",
-      };
+    cancelEdit() {
+      this.item = {};
+      this.$router.push({ name: "list" });
     },
+  },
+  created() {
+    this.getItem();
   },
 };
 </script>
+
 
 <style scoped>
 #items {

@@ -4,7 +4,8 @@ import java.util.List;
 
 public class ItemResponseDTO {
 
-    private List<Item> itemList;
+    private final List<Item> itemList;
+
 
     public ItemResponseDTO(List<Item> itemList) {
         this.itemList = itemList;
@@ -13,5 +14,6 @@ public class ItemResponseDTO {
     public List<Item> getItemList() {
         return itemList;
     }
+
 
 }

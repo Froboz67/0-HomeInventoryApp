@@ -2,6 +2,7 @@ package com.techelevator.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 public class Item {
@@ -15,13 +16,16 @@ public class Item {
     private BigDecimal value;
     private Boolean isValuable;
     private String notes;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
 
     public Item() {
 
     }
 
-    public Item(int itemId, int userId, String name, String category, LocalDate purchaseDate, BigDecimal purchasePrice, BigDecimal value, Boolean isValuable, String notes) {
+    public Item(int itemId, int userId, String name, String category, LocalDate purchaseDate, BigDecimal purchasePrice,
+                BigDecimal value, Boolean isValuable, String notes, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.itemId = itemId;
         this.userId = userId;
         this.name = name;
@@ -31,6 +35,8 @@ public class Item {
         this.value = value;
         this.isValuable = isValuable;
         this.notes = notes;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public int getItemId() {
@@ -105,17 +111,36 @@ public class Item {
         this.notes = notes;
     }
 
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
     @Override
     public String toString() {
         return "Item{" +
                 "itemId=" + itemId +
-                ", name=" + name +
+                ", userId=" + userId +
+                ", name='" + name + '\'' +
                 ", category='" + category + '\'' +
                 ", purchaseDate=" + purchaseDate +
                 ", purchasePrice=" + purchasePrice +
                 ", value=" + value +
                 ", isValuable=" + isValuable +
                 ", notes='" + notes + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }
