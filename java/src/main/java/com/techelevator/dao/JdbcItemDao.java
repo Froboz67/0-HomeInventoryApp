@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,12 +82,13 @@ public class JdbcItemDao implements ItemDao{
     @Override
     public Item updateItem(Item item, int userId) {
         Item updatedItem = null;
+        item.setUpdatedAt(LocalDateTime.now());
         final String sql = "UPDATE public.items\n" +
-                "\tSET item_id=?, user_id=?, i_name=?, category=?, purchase_date=?, purchase_price=?, i_value=?, is_valuable=?, notes=?, created_at=?, updated_at=?\n" +
-                "\tWHERE user_id = ?";
+                "\tSET user_id=?, i_name=?, category=?, purchase_date=?, purchase_price=?, i_value=?, is_valuable=?, notes=?, created_at=?, updated_at=?\n" +
+                "\tWHERE item_id=?";
         try {
-            int numberOfRowsAffected = jdbcTemplate.update(sql, item.getItemId(), item.getUserId(), item.getName(), item.getCategory(), item.getPurchaseDate(),
-                    item.getPurchasePrice(), item.getValue(), item.getValuable(), item.getNotes(), item.getCreatedAt(), item.getUpdatedAt());
+            int numberOfRowsAffected = jdbcTemplate.update(sql, item.getUserId(), item.getName(), item.getCategory(), item.getPurchaseDate(),
+                    item.getPurchasePrice(), item.getValue(), item.getValuable(), item.getNotes(), item.getCreatedAt(), item.getUpdatedAt(), item.getItemId());
             updatedItem = getItem(item.getItemId(), item.getUserId());
             if (numberOfRowsAffected == 0) {
                 throw new DaoException("zero rows affected");
@@ -94,6 +96,7 @@ public class JdbcItemDao implements ItemDao{
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("unable to connect to database", e);
         }
+        System.out.println(updatedItem);
         return updatedItem;
     }
 

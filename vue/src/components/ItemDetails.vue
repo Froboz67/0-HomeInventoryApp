@@ -1,36 +1,48 @@
 <template>
   <div>
     <div>
-      <h1>My List of Items</h1>
+      <h1>Item Details</h1>
     </div>
-    <div class="wrapper" v-for="item in itemList" :key="item.itemId">
+    <div
+      class="card-container"
+      v-bind="this.$store.state.item"
+      v-if="item && item.name"
+    >
       <header class="header">{{ item.name }}</header>
-      <!-- <article class="notes">
+      <article class="notes">
         <p>{{ item.notes }}</p>
       </article>
-      <aside class="aside-one">{{ item.category }}</aside>
+      <aside class="aside-one">
+        <div class="descriptor">Category:</div>
+        <div>{{ item.category }}</div>
+        <div class="descriptor">Room:</div>
+      </aside>
       <aside class="aside-two">
-        {{ formatCreatedAt(item.createdAt) }}{{ newDate }}
-      </aside> -->
+        <div class="descriptor">Created:</div>
+        <div class="date">
+          {{ item.createdAt ? formatCreatedAt(item.createdAt) : "" }}
+        </div>
+        <div v-if="item.updatedAt">
+          <div class="descriptor">Edited:</div>
+          <div class="date">
+            {{ item.updatedAt ? formatUpdatedAt(item.updatedAt) : "" }}
+          </div>
+        </div>
+      </aside>
       <footer class="footer" id="button-links">
         <button
           class="button-link"
-          v-on:click="
-            $router.push({ name: 'details', params: { id: item.itemId } })
-          "
-        >
-          item details
-        </button>
-        <button
-          class="button-link"
-          v-on:click="
-            $router.push({ name: 'update', params: { id: item.itemId } })
-          "
+          v-on:click="$router.push({ name: 'update' })"
         >
           edit item
         </button>
+        <button class="button-link" v-on:click="$router.push({ name: 'list' })">
+          Items List
+        </button>
       </footer>
+      <!-- </div> -->
     </div>
+    <div v-else>Loading...</div>
   </div>
 </template>
 
@@ -42,26 +54,43 @@ export default {
   data() {
     return {
       item: {},
-      itemList: {},
       newDate: "",
     };
   },
   methods: {
-    getItems() {
+    getItem() {
       const user = this.$store.state.user;
-      service.getItems(user.id).then((response) => {
-        this.itemList = response.data.itemList;
-        console.log(this.itemList);
+      console.log("user id: " + user.id);
+      const itemId = this.$route.params.id;
+      console.log("Item id: " + itemId);
+      service.getItem(user.id, itemId).then((response) => {
+        this.item = response.data;
+        console.log(this.item);
       });
     },
     formatCreatedAt(createdAt) {
+      if (!createdAt) {
+        return "";
+      }
+      console.log("this is createdAt: " + createdAt);
       const splitDate = createdAt.split(".")[0];
+      console.log(splitDate);
+      return format(new Date(splitDate), "MMMM dd, yyyy");
+    },
+    formatUpdatedAt(updatedAt) {
+      if (!updatedAt) {
+        return "";
+      }
+      console.log("this is updatedAt: " + updatedAt);
+      const splitDate = updatedAt.split(".")[0];
+      console.log(splitDate);
       const newDate = format(new Date(splitDate), "MMMM dd, yyyy");
       return newDate;
+      // return format(new Date(splitDate), "MMMM dd, yyyy");
     },
   },
   created() {
-    this.getItems();
+    this.getItem();
   },
 };
 </script>
@@ -70,7 +99,7 @@ export default {
 h1 {
   text-align: center;
 }
-.wrapper {
+.card-container {
   display: flex;
   flex-flow: row wrap;
   font-weight: normal;
@@ -84,7 +113,7 @@ h1 {
   border-radius: 0.5rem;
   background-color: aliceblue;
 }
-.wrapper > * {
+.card-container > * {
   padding: 0.6rem;
   flex: 1 100%;
   border-radius: 0.4rem;
@@ -101,6 +130,20 @@ h1 {
 }
 .notes {
   background-color: white;
+}
+.aside-one {
+  background-color: lightcyan;
+  flex: 1 1 10%;
+}
+.descriptor {
+  font-size: 0.75rem;
+}
+.aside-two {
+  background-color: lightcyan;
+  flex: 1 1 10%;
+}
+.date {
+  font-size: 0.9rem;
 }
 .aside-one {
   background-color: lightcyan;

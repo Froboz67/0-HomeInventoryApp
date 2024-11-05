@@ -131,13 +131,16 @@ public class Item {
     public String toString() {
         return "Item{" +
                 "itemId=" + itemId +
-                ", name=" + name +
+                ", userId=" + userId +
+                ", name='" + name + '\'' +
                 ", category='" + category + '\'' +
                 ", purchaseDate=" + purchaseDate +
                 ", purchasePrice=" + purchasePrice +
                 ", value=" + value +
                 ", isValuable=" + isValuable +
                 ", notes='" + notes + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }
