@@ -46,6 +46,9 @@
       </div>
       <div id="button-links">
         <button class="button-link" type="submit">Save Updated Item</button>
+        <button type="button" class="button-link" v-on:click="deleteItem">
+          Delete Item
+        </button>
         <button type="button" class="button-link" v-on:click="cancelEdit">
           Cancel Return to Items
         </button>
@@ -101,6 +104,26 @@ export default {
         .catch((error) => {
           console.log(error);
         });
+    },
+    deleteItem() {
+      if (confirm("This will permanently delete this item: are you sure?")) {
+        const user = this.$store.state.user;
+        console.log("user id: " + user.id);
+        const itemId = this.$route.params.id;
+        console.log("Item id: " + itemId);
+        service
+          .deleteItem(user.id, itemId, this.item)
+          .then((response) => {
+            if (response.status === 200) {
+              alert("item deleted from inventory");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        console.log("deletion canceled by user");
+      }
     },
     cancelEdit() {
       this.item = {};

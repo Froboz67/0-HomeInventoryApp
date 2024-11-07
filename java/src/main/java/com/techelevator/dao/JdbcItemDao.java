@@ -25,7 +25,7 @@ public class JdbcItemDao implements ItemDao{
     }
 
     @Override
-    public void saveItem(Item item, int userId) {
+    public Item saveItem(Item item, int userId) {
 
         final String sql ="INSERT INTO public.items(\n" +
                 "\tuser_id, i_name, category, purchase_date, purchase_price, i_value, is_valuable, notes)\n" +
@@ -43,6 +43,7 @@ public class JdbcItemDao implements ItemDao{
             throw new DaoException("Unable to connect to server or database", e);
         }
         System.out.println(item);
+        return item;
     }
     @Override
     public Item getItem(int itemId, int userId) {
@@ -98,6 +99,18 @@ public class JdbcItemDao implements ItemDao{
         }
         System.out.println(updatedItem);
         return updatedItem;
+    }
+    @Override
+    public Item deleteItem(Item item, int userId) {
+        final String sql = "DELETE FROM public.items\n" +
+                "\tWHERE item_id = ?";
+        try {
+            jdbcTemplate.update(sql, item.getItemId());
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("unable to connect to database", e);
+        }
+        System.out.println("the item was deleted");
+        return null;
     }
 
     Item mapRowToItem(SqlRowSet rowSet) {

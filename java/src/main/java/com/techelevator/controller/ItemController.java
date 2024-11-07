@@ -6,7 +6,10 @@ import com.techelevator.model.Item;
 import com.techelevator.model.ItemResponseDTO;
 import com.techelevator.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -23,15 +26,22 @@ public class ItemController {
     private UserDao userDao;
 
     @PostMapping("/item")
-    public void saveItem(@RequestBody Item item, Principal principal) {
+    public ResponseEntity<Item> saveItem(@RequestBody Item item, Principal principal) {
         User user = userDao.getUserByUsername(principal.getName());
         itemDao.saveItem(item, user.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(item);
     }
     @PostMapping("/update/{itemId}/{userId}")
-    public Item updateItem(@PathVariable int itemId, @PathVariable int userId, @RequestBody Item item, Principal principal) {
+    public ResponseEntity<Item> updateItem(@PathVariable int itemId, @PathVariable int userId, @RequestBody Item item, Principal principal) {
         User user = userDao.getUserByUsername(principal.getName());
         itemDao.updateItem(item, userId);
-        return new Item();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(item);
+    }
+    @DeleteMapping("/delete/{userId}/{itemId}")
+    public ResponseEntity<Item> deleteItem(@PathVariable int itemId, @PathVariable int userId, Item item, Principal principal) {
+        User user = userDao.getUserByUsername(principal.getName());
+        itemDao.deleteItem(item, userId);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
     }
 
     @GetMapping("/list-items/{userId}")

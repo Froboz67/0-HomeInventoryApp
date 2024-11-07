@@ -44,6 +44,10 @@
         <label for="item-notes">Notes about this Item: </label>
         <input type="text" id="item-notes" v-model="item.notes" />
       </div>
+      <div class="photo-input-group">
+        <label for="item-photo">upload photo: </label>
+        <input type="file" id="item-photo" @change="handleFileUpdoad" />
+      </div>
       <div id="button-links">
         <button class="button-link" type="submit">Save Item</button>
       </div>
@@ -53,6 +57,7 @@
 
 <script>
 import service from "../services/ItemService.js";
+import fileService from "../services/FileService.js";
 
 export default {
   data() {
@@ -66,9 +71,14 @@ export default {
         isValuable: false,
         notes: "",
       },
+      file: null,
     };
   },
   methods: {
+    handleFileUpdoad(event) {
+      this.file = event.target.files[0];
+      console.log("here is the file: ", this.file);
+    },
     saveItem() {
       if (this.item.purchaseDate) {
         this.item.purchaseDate = new Date(this.item.purchaseDate)
@@ -78,9 +88,33 @@ export default {
       service
         .saveItem(this.item)
         .then((response) => {
-          if (response.status === 200) {
+          if (response.status === 201) {
+            //
+            const itemId = response.data.itemId;
+            // add the call to the uploadPhoto() here
+
+            console.log("this is the Id: ", itemId);
             alert("item saved successfully!");
-            this.resetForm();
+            this.uploadPhoto(itemId);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    uploadPhoto(itemId) {
+      if (!this.file) return;
+
+      const formData = new FormData();
+      formData.append("file", this.file);
+      formData.append("itemId", itemId);
+      console.log("we are inside the upload", formData);
+      fileService
+        .savePhoto(formData)
+        .then((response) => {
+          if (response.status === 200) {
+            alert("photo saved!");
+            this.resetForm;
           }
         })
         .catch((error) => {
@@ -96,6 +130,7 @@ export default {
         value: null,
         isValuable: false,
         notes: "",
+        file: null,
       };
     },
   },
