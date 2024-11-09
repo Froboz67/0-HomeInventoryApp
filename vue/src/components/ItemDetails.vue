@@ -8,9 +8,14 @@
       v-bind="this.$store.state.item"
       v-if="item && item.name"
     >
-      <header class="header">{{ item.name }}</header>
+      <header class="header">
+        {{ item.name }} | Item id# {{ item.itemId }}
+      </header>
       <article class="notes">
         <p>{{ item.notes }}</p>
+        <div v-if="item" class="item-photo">
+          <img :src="photoUrl" alt="item photo" />
+        </div>
       </article>
       <aside class="aside-one">
         <div class="descriptor">Category:</div>
@@ -47,6 +52,7 @@
 </template>
 
 <script>
+import fileService from "../services/FileService";
 import service from "../services/ItemService";
 import { format } from "date-fns";
 
@@ -55,6 +61,7 @@ export default {
     return {
       item: {},
       newDate: "",
+      photoUrl: "",
     };
   },
   methods: {
@@ -65,8 +72,28 @@ export default {
       console.log("Item id: " + itemId);
       service.getItem(user.id, itemId).then((response) => {
         this.item = response.data;
-        console.log(this.item);
       });
+    },
+    getPhoto() {
+      const itemId = this.$route.params.id;
+      console.log("the current itemId: ", itemId);
+      fileService.getPhoto(itemId).then((response) => {
+        this.photo = response.data;
+        console.log("the photo is: ", this.photo);
+      });
+    },
+    getPhotoUrl() {
+      const itemId = this.$route.params.id;
+      fileService
+        .getPhotoUrl(itemId, { responseType: "blob" })
+        .then((response) => {
+          const blob = new Blob([response.data], { type: "image/png" });
+          this.photoUrl = URL.createObjectURL(blob);
+          console.log("file data ", this.photoUrl);
+        })
+        .catch((error) => {
+          console.error("Error fetching photo ", error);
+        });
     },
     formatCreatedAt(createdAt) {
       if (!createdAt) {
@@ -91,6 +118,8 @@ export default {
   },
   created() {
     this.getItem();
+    this.getPhoto();
+    this.getPhotoUrl();
   },
 };
 </script>
@@ -101,46 +130,46 @@ h1 {
 }
 .card-container {
   display: flex;
-  flex-flow: row wrap;
+  flex-direction: column;
   font-weight: normal;
   text-align: center;
   gap: 0.5rem;
   padding: 0.5rem;
   margin: 0.5rem;
   border: solid 1px black;
-  max-width: 600px;
+  max-width: 750px;
   box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
   background-color: aliceblue;
 }
 .card-container > * {
   padding: 0.6rem;
-  flex: 1 100%;
   border-radius: 0.4rem;
 }
 .header {
   background-color: gray;
-  flex: 1 100%;
   color: white;
-  font-weight: bold;
+  font-size: 1.2rem;
+  font-weight: normal;
 }
 .footer {
   background-color: lightgray;
-  flex: 1 100%;
 }
 .notes {
   background-color: white;
 }
+img {
+  width: 12rem;
+  height: auto;
+}
 .aside-one {
   background-color: lightcyan;
-  flex: 1 1 10%;
 }
 .descriptor {
   font-size: 0.75rem;
 }
 .aside-two {
   background-color: lightcyan;
-  flex: 1 1 10%;
 }
 .date {
   font-size: 0.9rem;
@@ -166,26 +195,31 @@ h1 {
   cursor: pointer;
   border: solid black 0.025rem;
 }
-@media all and (min-width: 600px) {
-  .aside {
-    flex: 1 0 0;
-  }
-}
+
 @media all and (min-width: 800px) {
-  .notes {
-    flex: 3 0px;
+  .card-container {
+    flex-direction: row;
+    flex-wrap: wrap;
   }
-  .aside-one {
+  .header {
+    flex: 1 100%;
     order: 1;
   }
   .notes {
+    flex: 3 0px;
+    order: 3;
+  }
+  .aside-one {
+    flex: 1 0 0;
     order: 2;
   }
   .aside-two {
-    order: 3;
+    flex: 1 0 0;
+    order: 4;
   }
   .footer {
-    order: 4;
+    flex: 1 100%;
+    order: 5;
   }
 }
 </style>

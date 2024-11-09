@@ -9,12 +9,7 @@
       </div>
       <div class="item-input-group">
         <label for="item-category">Category of Item: </label>
-        <input
-          type="text"
-          id="item-category"
-          v-model="item.category"
-          required
-        />
+        <input type="text" id="item-category" v-model="item.category" />
       </div>
       <div class="item-input-group">
         <label for="item-purchase-date">Purchase Date of Item: </label>
@@ -27,14 +22,14 @@
       <div class="item-input-group">
         <label for="item-purchase-price">Purchase Price of Item: </label>
         <input
-          type="text"
+          type="number"
           id="item-purchase-price"
-          v-model="item.purchasePrice"
+          v-model.number="item.purchasePrice"
         />
       </div>
       <div class="item-input-group">
         <label for="item-value">Current Value of Item: </label>
-        <input type="text" id="item-value" v-model="item.value" required />
+        <input type="number" id="item-value" v-model.number="item.value" />
       </div>
       <div class="item-input-group">
         <label for="item-is-valuable">Is this Item Valuable: </label>
@@ -43,6 +38,10 @@
       <div class="item-input-group">
         <label for="item-notes">Notes about this Item: </label>
         <input type="text" id="item-notes" v-model="item.notes" />
+      </div>
+      <div class="photo-input-group">
+        <label for="item-photo">upload photo: </label>
+        <input type="file" id="item-photo" @change="handleFileUpdoad" />
       </div>
       <div id="button-links">
         <button class="button-link" type="submit">Save Updated Item</button>
@@ -58,6 +57,7 @@
 </template>
 
 <script>
+import fileService from "../services/FileService";
 import service from "../services/ItemService";
 export default {
   data() {
@@ -71,6 +71,7 @@ export default {
         isValuable: false,
         notes: "",
       },
+      photo: null,
     };
   },
   methods: {
@@ -82,6 +83,13 @@ export default {
       service.getItem(user.id, itemId).then((response) => {
         this.item = response.data;
         console.log(this.item);
+      });
+    },
+    getPhoto() {
+      const itemId = this.$route.params.id;
+      fileService.getPhoto(itemId).then((response) => {
+        this.photo = response.data;
+        console.log("this is the photo: ", this.photo);
       });
     },
     updateItem() {
@@ -99,6 +107,7 @@ export default {
         .then((response) => {
           if (response.status === 200) {
             alert("item updated successfully!");
+            this.$router.push({ name: "list" });
           }
         })
         .catch((error) => {
@@ -111,11 +120,15 @@ export default {
         console.log("user id: " + user.id);
         const itemId = this.$route.params.id;
         console.log("Item id: " + itemId);
+        const photo = this.$store.state.photo;
+        console.log("photo is: ", photo);
+
         service
           .deleteItem(user.id, itemId, this.item)
           .then((response) => {
-            if (response.status === 200) {
+            if (response.status === 204) {
               alert("item deleted from inventory");
+              this.$router.push({ name: "list" });
             }
           })
           .catch((error) => {
@@ -132,6 +145,7 @@ export default {
   },
   created() {
     this.getItem();
+    this.getPhoto();
   },
 };
 </script>

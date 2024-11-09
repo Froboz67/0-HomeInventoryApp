@@ -9,12 +9,7 @@
       </div>
       <div class="item-input-group">
         <label for="item-category">Category of Item: </label>
-        <input
-          type="text"
-          id="item-category"
-          v-model="item.category"
-          required
-        />
+        <input type="text" id="item-category" v-model="item.category" />
       </div>
       <div class="item-input-group">
         <label for="item-purchase-date">Purchase Date of Item: </label>
@@ -27,14 +22,14 @@
       <div class="item-input-group">
         <label for="item-purchase-price">Purchase Price of Item: </label>
         <input
-          type="text"
+          type="number"
           id="item-purchase-price"
-          v-model="item.purchasePrice"
+          v-model.number="item.purchasePrice"
         />
       </div>
       <div class="item-input-group">
         <label for="item-value">Current Value of Item: </label>
-        <input type="text" id="item-value" v-model="item.value" required />
+        <input type="number" id="item-value" v-model.number="item.value" />
       </div>
       <div class="item-input-group">
         <label for="item-is-valuable">Is this Item Valuable: </label>
@@ -46,7 +41,12 @@
       </div>
       <div class="photo-input-group">
         <label for="item-photo">upload photo: </label>
-        <input type="file" id="item-photo" @change="handleFileUpdoad" />
+        <input
+          type="file"
+          id="item-photo"
+          v-on:change="handleFileUpload"
+          ref="fileInput"
+        />
       </div>
       <div id="button-links">
         <button class="button-link" type="submit">Save Item</button>
@@ -75,9 +75,9 @@ export default {
     };
   },
   methods: {
-    handleFileUpdoad(event) {
+    handleFileUpload(event) {
       this.file = event.target.files[0];
-      console.log("here is the file: ", this.file);
+      console.log("here is the file: ", this.file, this.file.name);
     },
     saveItem() {
       if (this.item.purchaseDate) {
@@ -85,21 +85,48 @@ export default {
           .toISOString()
           .split("T")[0];
       }
+      console.log("complete item object: ", this.item);
       service
         .saveItem(this.item)
         .then((response) => {
           if (response.status === 201) {
-            //
             const itemId = response.data.itemId;
-            // add the call to the uploadPhoto() here
+            const photoName = response.data.name;
+            console.log("this is the Id: ", itemId, photoName);
 
-            console.log("this is the Id: ", itemId);
-            alert("item saved successfully!");
+            if (this.file) {
+              this.savePhoto(itemId);
+            } else {
+              alert("item saved successfully!");
+              this.resetForm();
+            }
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    savePhoto(itemId) {
+      const photoFileName = this.file.name;
+      const photoMetadata = {
+        itemId: itemId,
+        name: photoFileName,
+        photoUrl:
+          "D:/Kevin_Docs/Engel_Docs/Tech_Elevator/workspace/GitHub/HomeInventoryApp/item-photos/",
+      };
+      console.log("this is the metadata ", photoMetadata);
+      fileService
+        .savePhoto(photoMetadata)
+        .then((response) => {
+          console.log(response);
+          if (response.status === 201) {
+            alert("photo metadata saved to db");
             this.uploadPhoto(itemId);
           }
         })
         .catch((error) => {
           console.log(error);
+          alert("there was a problem saving the photo");
         });
     },
     uploadPhoto(itemId) {
@@ -108,17 +135,18 @@ export default {
       const formData = new FormData();
       formData.append("file", this.file);
       formData.append("itemId", itemId);
-      console.log("we are inside the upload", formData);
+
       fileService
-        .savePhoto(formData)
+        .uploadPhoto(formData)
         .then((response) => {
-          if (response.status === 200) {
+          if (response.status === 201) {
             alert("photo saved!");
-            this.resetForm;
+            this.resetForm();
           }
         })
         .catch((error) => {
           console.log(error);
+          alert("file upload failed.");
         });
     },
     resetForm() {
@@ -130,8 +158,11 @@ export default {
         value: null,
         isValuable: false,
         notes: "",
-        file: null,
       };
+      this.file = null;
+      if (this.$refs.fileInput) {
+        this.$refs.fileInput.value = null;
+      }
     },
   },
 };

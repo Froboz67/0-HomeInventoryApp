@@ -2,20 +2,22 @@ package com.techelevator.model;
 
 import java.time.LocalDateTime;
 
-public class ItemPhoto {
+public class Photo {
 
     private int photoId;
     private int itemId;
+    private String name;
     private String photoUrl;
     private LocalDateTime uploadedAt;
 
-    public ItemPhoto() {
+    public Photo() {
 
     }
 
-    public ItemPhoto(int photoId, int itemId, String photoUrl, LocalDateTime uploadedAt) {
+    public Photo(int photoId, int itemId, String name, String photoUrl, LocalDateTime uploadedAt) {
         this.photoId = photoId;
         this.itemId = itemId;
+        this.name = name;
         this.photoUrl = photoUrl;
         this.uploadedAt = uploadedAt;
     }
@@ -36,6 +38,14 @@ public class ItemPhoto {
         this.itemId = itemId;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getPhotoUrl() {
         return photoUrl;
     }
@@ -54,9 +64,10 @@ public class ItemPhoto {
 
     @Override
     public String toString() {
-        return "ItemPhoto{" +
+        return "Photo{" +
                 "photoId=" + photoId +
                 ", itemId=" + itemId +
+                ", name='" + name + '\'' +
                 ", photoUrl='" + photoUrl + '\'' +
                 ", uploadedAt=" + uploadedAt +
                 '}';

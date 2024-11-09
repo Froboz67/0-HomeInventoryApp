@@ -2,6 +2,7 @@ package com.techelevator.dao;
 
 import com.techelevator.exception.DaoException;
 import com.techelevator.model.Item;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -102,6 +103,14 @@ public class JdbcItemDao implements ItemDao{
     }
     @Override
     public Item deleteItem(Item item, int userId) {
+        final String aSql = "DELETE FROM public.item_photos\n" +
+                "\tWHERE item_id = ?";
+        try {
+            jdbcTemplate.update(aSql, item.getItemId());
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("unable to connect to database", e);
+
+        }
         final String sql = "DELETE FROM public.items\n" +
                 "\tWHERE item_id = ?";
         try {

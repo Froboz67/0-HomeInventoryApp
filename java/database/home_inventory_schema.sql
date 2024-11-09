@@ -32,6 +32,7 @@ CREATE TABLE items (
 CREATE TABLE item_photos (
     photo_id SERIAL, -- primary key
     item_id INT, -- foreign key
+    photo_name TEXT,
     photo_url TEXT NOT NULL, -- url path for photo image
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT PK_photo_id PRIMARY KEY (photo_id),

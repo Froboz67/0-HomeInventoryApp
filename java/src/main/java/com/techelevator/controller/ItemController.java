@@ -35,13 +35,13 @@ public class ItemController {
     public ResponseEntity<Item> updateItem(@PathVariable int itemId, @PathVariable int userId, @RequestBody Item item, Principal principal) {
         User user = userDao.getUserByUsername(principal.getName());
         itemDao.updateItem(item, userId);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(item);
+        return ResponseEntity.status(HttpStatus.OK).body(item);
     }
     @DeleteMapping("/delete/{userId}/{itemId}")
     public ResponseEntity<Item> deleteItem(@PathVariable int itemId, @PathVariable int userId, Item item, Principal principal) {
         User user = userDao.getUserByUsername(principal.getName());
         itemDao.deleteItem(item, userId);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 
     @GetMapping("/list-items/{userId}")
