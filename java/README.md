@@ -21,13 +21,15 @@ Home Inventory
 ---
 
 ## Overview
-A detailed overview of what the project does, the problem it solves, and any context that would help the user understand its purpose. Mention any unique or innovative features.
+This application allows users to catalog inventory in their homes. The project allows photo uploads using JavaScript 
+formData() and creating a multipartFile to be processed on the backend using Java and saving the photo file to a
+local folder.
 
 ## Features
-- List the primary features or capabilities of the project.
-- Example:
+- Current:
     - User authentication with secure passwords.
-    - Item organization by category and room.
+    - Item organization by category, create and update dates, current value.
+      - purchase price, and purchase date.
     - Document and photo storage.
 
 ## Installation

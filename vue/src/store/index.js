@@ -30,6 +30,9 @@ export function createStore(currentToken, currentUser) {
       },
       SET_ITEM(state, item) {
         state.item = item;
+      },
+      SET_PHOTO(state, photo) {
+        state.photo = photo;
       }
     },
   });

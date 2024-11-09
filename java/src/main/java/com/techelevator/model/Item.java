@@ -14,7 +14,7 @@ public class Item {
     private LocalDate purchaseDate;
     private BigDecimal purchasePrice;
     private BigDecimal value;
-    private Boolean isValuable;
+    private boolean isValuable;
     private String notes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
