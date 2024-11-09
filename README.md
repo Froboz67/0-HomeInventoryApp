@@ -9,5 +9,5 @@ Java, Spring Boot, PostgreSQL
 # Frontend
 
 Vue.js, HTML5, CSS, Bootstrap
-  ## Library - date-fns
+
 
