@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <h1>Item Details</h1>
+      <header-module />
     </div>
     <div
       class="card-container"
@@ -21,6 +21,10 @@
         <div class="descriptor">Category:</div>
         <div>{{ item.category }}</div>
         <div class="descriptor">Room:</div>
+        <div class="descriptor">Purchase Date:</div>
+        <div class="date">
+          {{ item.purchaseDate ? formatCreatedAt(item.purchaseDate) : "" }}
+        </div>
         <div class="descriptor">Purchase Price:</div>
         <div>${{ item.purchasePrice }}</div>
         <div class="descriptor">Estimated Value:</div>
@@ -59,8 +63,10 @@
 import fileService from "../services/FileService";
 import service from "../services/ItemService";
 import { format } from "date-fns";
+import HeaderModule from "./componentModules/HeaderModule.vue";
 
 export default {
+  components: { HeaderModule },
   data() {
     return {
       item: {},
@@ -122,6 +128,7 @@ export default {
     },
   },
   created() {
+    this.$store.commit("SET_PAGE_TITLE", "Item Details");
     this.getItem();
     this.getPhoto();
     this.getPhotoUrl();
@@ -130,10 +137,6 @@ export default {
 </script>
 
 <style scoped>
-h1 {
-  text-align: center;
-  color: white;
-}
 .card-container {
   display: flex;
   flex-direction: column;
@@ -173,7 +176,8 @@ img {
 }
 
 .descriptor {
-  font-size: 0.75rem;
+  font-size: 0.9rem;
+  color: yellow;
 }
 
 .date {
@@ -183,12 +187,13 @@ img {
   color: white;
   background-color: #5c677d;
   flex: 1 1 10%;
+  font-size: 0.9rem;
 }
 .aside-two {
   color: white;
   background-color: #5c677d;
   flex: 1 1 10%;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
 }
 #button-links {
   display: flex;

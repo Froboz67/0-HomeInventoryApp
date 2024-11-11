@@ -1,6 +1,9 @@
 <template>
   <div id="items" class="text-center">
-    <h1>Update Item</h1>
+    <!-- <h1>Update Item</h1> -->
+    <div>
+      <header-module />
+    </div>
     <div class="form-container">
       <form v-on:submit.prevent="updateItem">
         <header class="header">{{ item.name }}</header>
@@ -72,7 +75,12 @@
 <script>
 import fileService from "../services/FileService";
 import service from "../services/ItemService";
+import HeaderModule from "./componentModules/HeaderModule.vue";
+
 export default {
+  components: {
+    HeaderModule,
+  },
   data() {
     return {
       item: {
@@ -219,6 +227,7 @@ export default {
     },
   },
   created() {
+    this.$store.commit("SET_PAGE_TITLE", "Update Items");
     this.getItem();
     this.getPhoto();
   },
@@ -227,10 +236,6 @@ export default {
 
 
 <style scoped>
-h1 {
-  text-align: center;
-  color: white;
-}
 .form-container {
   display: flex;
   flex-direction: column;
@@ -311,5 +316,11 @@ input[type="file"] {
   border-radius: 4px;
   cursor: pointer;
   border: solid black 0.025rem;
+}
+#items {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
 }
 </style>

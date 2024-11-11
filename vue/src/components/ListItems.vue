@@ -1,7 +1,8 @@
 <template>
   <div class="main-div">
     <div>
-      <h1>My List of Items</h1>
+      <header-module />
+      <!-- <h1>My Items List</h1> -->
     </div>
     <!-- <is-loading v-bind="isLoading" />
     <div v-if="!isLoading"> -->
@@ -34,9 +35,12 @@
 import service from "../services/ItemService";
 import { format } from "date-fns";
 import isLoading from "./isLoading.vue";
+import HeaderModule from "./componentModules/HeaderModule.vue";
 
 export default {
-  // components: { isLoading },
+  components: {
+    HeaderModule,
+  },
   data() {
     return {
       item: {},
@@ -61,16 +65,13 @@ export default {
     },
   },
   created() {
+    this.$store.commit("SET_PAGE_TITLE", "My List of Items");
     this.getItems();
   },
 };
 </script>
 
 <style scoped>
-h1 {
-  text-align: center;
-  color: white;
-}
 .wrapper {
   display: flex;
   flex-flow: row wrap;

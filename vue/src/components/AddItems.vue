@@ -1,38 +1,54 @@
 <template>
   <div id="items" class="text-center">
-    <h1>Add Items</h1>
+    <header-module />
     <div class="form-container">
       <form v-on:submit.prevent="saveItem">
         <header class="header">{{ item.name || "Item Name" }}</header>
         <section class="section">
-          <div class="item-input-group">
-            <label for="item-name">Name of Item: </label>
-            <input type="text" id="item-name" v-model="item.name" required />
-          </div>
-          <div class="item-input-group">
-            <label for="item-category">Category of Item: </label>
-            <input type="text" id="item-category" v-model="item.category" />
-          </div>
-          <div class="item-input-group">
+          <text-field
+            label="Name:"
+            id="item-name"
+            v-model="item.name"
+            itemid="item-name"
+            placeholder="Name"
+            required
+          />
+          <text-field
+            label="Category:"
+            id="item-category"
+            v-model="item.category"
+            itemid="item-category"
+            placeholder="Category"
+          />
+          <text-field
+            label="Puchase Date:"
+            id="item-purchase-date"
+            v-model="item.purchaseDate"
+            itemid="item-purchase-date"
+            placeholder="Purchase Date"
+          />
+          <!-- <div class="item-input-group">
             <label for="item-purchase-date">Purchase Date of Item: </label>
             <input
               type="text"
               id="item-purchase-date"
               v-model="item.purchaseDate"
             />
-          </div>
-          <div class="item-input-group">
-            <label for="item-purchase-price">Purchase Price of Item: </label>
-            <input
-              type="number"
-              id="item-purchase-price"
-              v-model.number="item.purchasePrice"
-            />
-          </div>
-          <div class="item-input-group">
-            <label for="item-value">Current Value of Item: </label>
-            <input type="number" id="item-value" v-model.number="item.value" />
-          </div>
+          </div> -->
+          <number-field
+            label="Price:"
+            id="item-purchase-price"
+            v-model="item.purchasePrice"
+            itemid="item-purchase-price"
+            placeholder="Purchase Price"
+          />
+          <number-field
+            label="Value:"
+            id="item-current-value"
+            v-model="item.value"
+            itemid="item-current-price"
+            placeholder="Current Value"
+          />
           <div class="item-input-group">
             <label for="item-is-valuable">Is this Item Valuable: </label>
             <input
@@ -41,10 +57,13 @@
               v-model="item.isValuable"
             />
           </div>
-          <div class="item-input-group">
-            <label for="item-notes">Notes about this Item: </label>
-            <input type="text" id="item-notes" v-model="item.notes" />
-          </div>
+          <text-field
+            label="notes:"
+            id="item-notes"
+            v-model="item.notes"
+            itemid="item-notes"
+            placeholder="Notes"
+          />
           <div class="photo-input-group">
             <label for="item-photo" id="upload-label">upload photo: </label>
             <input
@@ -66,16 +85,24 @@
 <script>
 import service from "../services/ItemService.js";
 import fileService from "../services/FileService.js";
+import HeaderModule from "./componentModules/HeaderModule.vue";
+import TextField from "./componentModules/TextField.vue";
+import NumberField from "./componentModules/NumberField.vue";
 
 export default {
+  components: {
+    HeaderModule,
+    TextField,
+    NumberField,
+  },
   data() {
     return {
       item: {
         name: "",
         category: "",
         purchaseDate: "",
-        purchasePrice: null,
-        value: null,
+        purchasePrice: 0,
+        value: 0,
         isValuable: false,
         notes: "",
       },
@@ -115,6 +142,7 @@ export default {
         });
     },
     savePhoto(itemId) {
+      console.log("save photo called", itemId);
       const photoFileName = this.file.name;
       const photoMetadata = {
         itemId: itemId,
@@ -173,14 +201,13 @@ export default {
       }
     },
   },
+  created() {
+    this.$store.commit("SET_PAGE_TITLE", "Add Items");
+  },
 };
 </script>
 
 <style scoped>
-h1 {
-  text-align: center;
-  color: white;
-}
 .form-container {
   display: flex;
   flex-direction: column;
@@ -211,6 +238,9 @@ h1 {
   margin-bottom: 0.5rem;
 }
 .section {
+  display: flex;
+  flex-direction: column;
+  /* align-items: end; */
   color: white;
   border: 0.05rem solid #001233;
   border-radius: 0.4rem;
@@ -233,7 +263,7 @@ h1 {
   justify-content: flex-start;
 }
 
-label {
+/* label {
   flex: 0 0 auto;
   margin-right: 0.5rem;
 }
@@ -244,7 +274,7 @@ input {
   border-radius: 0.25rem;
   width: 100%;
   max-width: 100;
-}
+} */
 input[type="file"] {
   padding: 0.15rem;
   border: 1px solid #002855;
@@ -264,5 +294,11 @@ input[type="file"] {
   border-radius: 4px;
   cursor: pointer;
   border: solid black 0.025rem;
+}
+#items {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
 }
 </style>
