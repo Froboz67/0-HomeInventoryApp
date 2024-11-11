@@ -1,57 +1,65 @@
 <template>
   <div id="items" class="text-center">
-    <form v-on:submit.prevent="saveItem">
-      <h1>Add Items</h1>
-
-      <div class="item-input-group">
-        <label for="item-name">Name of Item: </label>
-        <input type="text" id="item-name" v-model="item.name" required />
-      </div>
-      <div class="item-input-group">
-        <label for="item-category">Category of Item: </label>
-        <input type="text" id="item-category" v-model="item.category" />
-      </div>
-      <div class="item-input-group">
-        <label for="item-purchase-date">Purchase Date of Item: </label>
-        <input
-          type="text"
-          id="item-purchase-date"
-          v-model="item.purchaseDate"
-        />
-      </div>
-      <div class="item-input-group">
-        <label for="item-purchase-price">Purchase Price of Item: </label>
-        <input
-          type="number"
-          id="item-purchase-price"
-          v-model.number="item.purchasePrice"
-        />
-      </div>
-      <div class="item-input-group">
-        <label for="item-value">Current Value of Item: </label>
-        <input type="number" id="item-value" v-model.number="item.value" />
-      </div>
-      <div class="item-input-group">
-        <label for="item-is-valuable">Is this Item Valuable: </label>
-        <input type="text" id="item-is-valuable" v-model="item.isValuable" />
-      </div>
-      <div class="item-input-group">
-        <label for="item-notes">Notes about this Item: </label>
-        <input type="text" id="item-notes" v-model="item.notes" />
-      </div>
-      <div class="photo-input-group">
-        <label for="item-photo">upload photo: </label>
-        <input
-          type="file"
-          id="item-photo"
-          v-on:change="handleFileUpload"
-          ref="fileInput"
-        />
-      </div>
-      <div id="button-links">
-        <button class="button-link" type="submit">Save Item</button>
-      </div>
-    </form>
+    <h1>Add Items</h1>
+    <div class="form-container">
+      <form v-on:submit.prevent="saveItem">
+        <header class="header">{{ item.name || "Item Name" }}</header>
+        <section class="section">
+          <div class="item-input-group">
+            <label for="item-name">Name of Item: </label>
+            <input type="text" id="item-name" v-model="item.name" required />
+          </div>
+          <div class="item-input-group">
+            <label for="item-category">Category of Item: </label>
+            <input type="text" id="item-category" v-model="item.category" />
+          </div>
+          <div class="item-input-group">
+            <label for="item-purchase-date">Purchase Date of Item: </label>
+            <input
+              type="text"
+              id="item-purchase-date"
+              v-model="item.purchaseDate"
+            />
+          </div>
+          <div class="item-input-group">
+            <label for="item-purchase-price">Purchase Price of Item: </label>
+            <input
+              type="number"
+              id="item-purchase-price"
+              v-model.number="item.purchasePrice"
+            />
+          </div>
+          <div class="item-input-group">
+            <label for="item-value">Current Value of Item: </label>
+            <input type="number" id="item-value" v-model.number="item.value" />
+          </div>
+          <div class="item-input-group">
+            <label for="item-is-valuable">Is this Item Valuable: </label>
+            <input
+              type="text"
+              id="item-is-valuable"
+              v-model="item.isValuable"
+            />
+          </div>
+          <div class="item-input-group">
+            <label for="item-notes">Notes about this Item: </label>
+            <input type="text" id="item-notes" v-model="item.notes" />
+          </div>
+          <div class="photo-input-group">
+            <label for="item-photo" id="upload-label">upload photo: </label>
+            <input
+              type="file"
+              id="item-photo"
+              v-on:change="handleFileUpload"
+              ref="fileInput"
+            />
+          </div>
+        </section>
+        <footer class="footer" id="button-links">
+          <button class="button-link" type="submit">Save Item</button>
+        </footer>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -169,25 +177,81 @@ export default {
 </script>
 
 <style scoped>
-#items {
-  display: flex;
-  justify-content: center;
-  height: 100vh;
+h1 {
+  text-align: center;
+  color: white;
 }
-.item-input-group {
+.form-container {
   display: flex;
-  margin-bottom: 1rem;
+  flex-direction: column;
+  font-weight: normal;
+  text-align: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  margin: 0.5rem auto;
+  border: solid 1px black;
+  max-width: 600px;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  background-color: #979dac;
+  width: 100%;
+  box-sizing: border-box;
+}
+.form-container > * {
+  padding: 0.4rem;
+  border-radius: 0.4rem;
+}
+.header {
+  background-color: #023e7d;
+  color: white;
+  font-size: 2.2rem;
+  font-weight: normal;
+  border-radius: 0.4rem;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.section {
+  color: white;
+  border: 0.05rem solid #001233;
+  border-radius: 0.4rem;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer {
+  background-color: #0466c8;
+  border-radius: 0.4rem;
+  padding: 0.5rem;
+}
+
+.item-input-group,
+.photo-input-group {
+  display: flex;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
   align-items: center;
+  justify-content: flex-start;
 }
+
 label {
   flex: 0 0 auto;
   margin-right: 0.5rem;
 }
 input {
-  flex: 1;
+  display: flex;
   padding: 0.15rem;
-  border: 1px solid #ccc;
+  border: 1px solid #002855;
   border-radius: 0.25rem;
+  width: 100%;
+  max-width: 100;
+}
+input[type="file"] {
+  padding: 0.15rem;
+  border: 1px solid #002855;
+  border-radius: 0.25rem;
+  width: 100%;
+  max-width: 100;
+  background-color: white;
 }
 #button-links {
   display: flex;

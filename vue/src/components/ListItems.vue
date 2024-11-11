@@ -1,17 +1,12 @@
 <template>
-  <div>
+  <div class="main-div">
     <div>
       <h1>My List of Items</h1>
     </div>
+    <!-- <is-loading v-bind="isLoading" />
+    <div v-if="!isLoading"> -->
     <div class="wrapper" v-for="item in itemList" :key="item.itemId">
       <header class="header">{{ item.name }}</header>
-      <!-- <article class="notes">
-        <p>{{ item.notes }}</p>
-      </article>
-      <aside class="aside-one">{{ item.category }}</aside>
-      <aside class="aside-two">
-        {{ formatCreatedAt(item.createdAt) }}{{ newDate }}
-      </aside> -->
       <footer class="footer" id="button-links">
         <button
           class="button-link"
@@ -31,23 +26,28 @@
         </button>
       </footer>
     </div>
+    <!-- </div> -->
   </div>
 </template>
 
 <script>
 import service from "../services/ItemService";
 import { format } from "date-fns";
+import isLoading from "./isLoading.vue";
 
 export default {
+  // components: { isLoading },
   data() {
     return {
       item: {},
       itemList: {},
       newDate: "",
+      // isLoading: true,
     };
   },
   methods: {
     getItems() {
+      // this.isLoading = true;
       const user = this.$store.state.user;
       service.getItems(user.id).then((response) => {
         this.itemList = response.data.itemList;
@@ -69,6 +69,7 @@ export default {
 <style scoped>
 h1 {
   text-align: center;
+  color: white;
 }
 .wrapper {
   display: flex;
@@ -77,12 +78,12 @@ h1 {
   text-align: center;
   gap: 0.5rem;
   padding: 0.5rem;
-  margin: 0.5rem;
+  margin: 0.5rem auto;
   border: solid 1px black;
   max-width: 600px;
   box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
-  background-color: aliceblue;
+  background-color: #979dac;
 }
 .wrapper > * {
   padding: 0.6rem;
@@ -90,13 +91,13 @@ h1 {
   border-radius: 0.4rem;
 }
 .header {
-  background-color: gray;
+  background-color: #023e7d;
   flex: 1 100%;
   color: white;
   font-weight: bold;
 }
 .footer {
-  background-color: lightgray;
+  background-color: #0466c8;
   flex: 1 100%;
 }
 .notes {
