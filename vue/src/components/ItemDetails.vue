@@ -21,6 +21,10 @@
         <div class="descriptor">Category:</div>
         <div>{{ item.category }}</div>
         <div class="descriptor">Room:</div>
+        <div class="descriptor">Purchase Price:</div>
+        <div>${{ item.purchasePrice }}</div>
+        <div class="descriptor">Estimated Value:</div>
+        <div>${{ item.value }}</div>
       </aside>
       <aside class="aside-two">
         <div class="descriptor">Created:</div>
@@ -72,6 +76,7 @@ export default {
       console.log("Item id: " + itemId);
       service.getItem(user.id, itemId).then((response) => {
         this.item = response.data;
+        console.log("data: ", this.item);
       });
     },
     getPhoto() {
@@ -127,6 +132,7 @@ export default {
 <style scoped>
 h1 {
   text-align: center;
+  color: white;
 }
 .card-container {
   display: flex;
@@ -135,51 +141,52 @@ h1 {
   text-align: center;
   gap: 0.5rem;
   padding: 0.5rem;
-  margin: 0.5rem;
+  margin: 0.5rem auto;
   border: solid 1px black;
   max-width: 750px;
   box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
-  background-color: aliceblue;
+  background-color: #979dac;
 }
 .card-container > * {
   padding: 0.6rem;
   border-radius: 0.4rem;
 }
 .header {
-  background-color: gray;
+  background-color: #023e7d;
   color: white;
   font-size: 1.2rem;
   font-weight: normal;
 }
 .footer {
-  background-color: lightgray;
+  background-color: #0466c8;
 }
 .notes {
-  background-color: white;
+  background-color: #979dac;
+  border: 0.05rem solid #001233;
+  box-shadow: 0 0.25rem 0.5rem #33415c;
 }
 img {
   width: 12rem;
   height: auto;
+  border-radius: 0.4rem;
 }
-.aside-one {
-  background-color: lightcyan;
-}
+
 .descriptor {
   font-size: 0.75rem;
 }
-.aside-two {
-  background-color: lightcyan;
-}
+
 .date {
   font-size: 0.9rem;
 }
 .aside-one {
-  background-color: lightcyan;
+  color: white;
+  background-color: #5c677d;
   flex: 1 1 10%;
 }
 .aside-two {
-  background-color: lightcyan;
+  color: white;
+  background-color: #5c677d;
   flex: 1 1 10%;
   font-size: 0.75rem;
 }

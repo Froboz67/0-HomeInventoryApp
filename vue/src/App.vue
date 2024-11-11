@@ -15,7 +15,17 @@
   </div>
 </template>
 <style>
+html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #001233;
+}
+/* old original style */
 #home-inventory-app {
+  display: flex;
+  flex-direction: column;
   justify-items: center;
+  background-color: #001233;
 }
 </style>

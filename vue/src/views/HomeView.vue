@@ -20,6 +20,10 @@ export default {
 };
 </script>
 <style scoped>
+h1 {
+  text-align: center;
+  color: white;
+}
 .buttons {
   display: flex;
   gap: 1rem;
