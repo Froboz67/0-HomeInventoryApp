@@ -19,7 +19,7 @@ export default {
 <style scoped>
 h1 {
   text-align: center;
-  color: yellow;
+  color: black;
   font-style: bold;
 }
 </style>

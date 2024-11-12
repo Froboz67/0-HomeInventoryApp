@@ -40,15 +40,12 @@ export default {
 label {
   flex: 0 0 auto;
   margin-right: 0.5rem;
-  /* white-space: nowrap; */
-  /* width: 4.5rem; */
 }
 input {
   flex: 1;
   padding: 0.15rem;
   border: 1px solid #002855;
   border-radius: 0.25rem;
-  /* width: 10rem; */
   box-sizing: border-box;
 }
 </style>

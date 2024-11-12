@@ -77,8 +77,8 @@ export default {
   flex-flow: row wrap;
   font-weight: normal;
   text-align: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
+  gap: 0.2rem;
+  padding: 0.2rem;
   margin: 0.5rem auto;
   border: solid 1px black;
   max-width: 600px;
@@ -92,13 +92,13 @@ export default {
   border-radius: 0.4rem;
 }
 .header {
-  background-color: #023e7d;
+  background-color: #2c6e49;
   flex: 1 100%;
   color: white;
   font-weight: bold;
 }
 .footer {
-  background-color: #0466c8;
+  background-color: #4c956c;
   flex: 1 100%;
 }
 .notes {

@@ -1,6 +1,5 @@
 <template>
   <div id="home-inventory-app">
-    \
     <header>
       <div class="home">
         <h1>Home Inventory</h1>
@@ -48,14 +47,21 @@ html {
   padding: 0;
   background-color: #001233;
 }
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 /* old original style */
 #home-inventory-app {
   display: flex;
   flex-direction: column;
-  background-color: #001233;
+  background-color: #a5a5a5;
 }
 #link-color,
 #nav {
-  color: white;
+  color: black;
+  display: flex;
+  justify-content: flex-end;
 }
 </style>

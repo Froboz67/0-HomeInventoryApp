@@ -249,7 +249,6 @@ export default {
   box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
   background-color: #979dac;
-
   box-sizing: border-box;
 }
 .form-container > * {
@@ -257,7 +256,7 @@ export default {
   border-radius: 0.4rem;
 }
 .header {
-  background-color: #023e7d;
+  background-color: #2c6e49;
   color: white;
   font-size: 2.2rem;
   font-weight: normal;
@@ -271,9 +270,10 @@ export default {
   border-radius: 0.4rem;
   padding: 0.5rem;
   margin-bottom: 0.5rem;
+  background-color: #77878b;
 }
 .footer {
-  background-color: #0466c8;
+  background-color: #4c956c;
   border-radius: 0.4rem;
   padding: 0.5rem;
 }
@@ -320,7 +320,6 @@ input[type="file"] {
 #items {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   height: 100vh;
 }
 </style>

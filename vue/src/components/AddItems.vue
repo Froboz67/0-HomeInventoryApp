@@ -27,14 +27,6 @@
             itemid="item-purchase-date"
             placeholder="Purchase Date"
           />
-          <!-- <div class="item-input-group">
-            <label for="item-purchase-date">Purchase Date of Item: </label>
-            <input
-              type="text"
-              id="item-purchase-date"
-              v-model="item.purchaseDate"
-            />
-          </div> -->
           <number-field
             label="Price:"
             id="item-purchase-price"
@@ -64,7 +56,13 @@
             itemid="item-notes"
             placeholder="Notes"
           />
-          <div class="photo-input-group">
+          <file-upload
+            label="Upload Photo"
+            id="item-photo"
+            @file-upload="handleUploadedFile"
+            placeholder="Upload a Picture"
+          />
+          <!-- <div class="photo-input-group">
             <label for="item-photo" id="upload-label">upload photo: </label>
             <input
               type="file"
@@ -72,7 +70,7 @@
               v-on:change="handleFileUpload"
               ref="fileInput"
             />
-          </div>
+          </div> -->
         </section>
         <footer class="footer" id="button-links">
           <button class="button-link" type="submit">Save Item</button>
@@ -88,21 +86,24 @@ import fileService from "../services/FileService.js";
 import HeaderModule from "./componentModules/HeaderModule.vue";
 import TextField from "./componentModules/TextField.vue";
 import NumberField from "./componentModules/NumberField.vue";
+import FileUpload from "./componentModules/FileUpload.vue";
 
 export default {
   components: {
     HeaderModule,
     TextField,
     NumberField,
+    FileUpload,
   },
   data() {
+    FileUpload;
     return {
       item: {
         name: "",
         category: "",
         purchaseDate: "",
-        purchasePrice: 0,
-        value: 0,
+        purchasePrice: null,
+        value: null,
         isValuable: false,
         notes: "",
       },
@@ -110,10 +111,14 @@ export default {
     };
   },
   methods: {
-    handleFileUpload(event) {
-      this.file = event.target.files[0];
-      console.log("here is the file: ", this.file, this.file.name);
+    handleUploadedFile(file) {
+      this.file = file;
+      console.log("file received", this.file);
     },
+    // handleFileUpload(event) {
+    //   this.file = event.target.files[0];
+    //   console.log("here is the file: ", this.file, this.file.name);
+    // },
     saveItem() {
       if (this.item.purchaseDate) {
         this.item.purchaseDate = new Date(this.item.purchaseDate)
@@ -128,11 +133,11 @@ export default {
             const itemId = response.data.itemId;
             const photoName = response.data.name;
             console.log("this is the Id: ", itemId, photoName);
+            alert("item saved successfully!");
 
             if (this.file) {
               this.savePhoto(itemId);
             } else {
-              alert("item saved successfully!");
               this.resetForm();
             }
           }
@@ -213,8 +218,8 @@ export default {
   flex-direction: column;
   font-weight: normal;
   text-align: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
+  gap: 0.2rem;
+  /* padding: 0.2rem; */
   margin: 0.5rem auto;
   border: solid 1px black;
   max-width: 600px;
@@ -223,19 +228,21 @@ export default {
   background-color: #979dac;
   width: 100%;
   box-sizing: border-box;
+  box-shadow: 0 0.25rem 0.5rem #33415c;
 }
 .form-container > * {
-  padding: 0.4rem;
+  padding: 0.2rem;
   border-radius: 0.4rem;
+  gap: 0.2rem;
 }
 .header {
-  background-color: #023e7d;
+  background-color: #2c6e49;
   color: white;
   font-size: 2.2rem;
   font-weight: normal;
   border-radius: 0.4rem;
   padding: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.2rem;
 }
 .section {
   display: flex;
@@ -245,11 +252,11 @@ export default {
   border: 0.05rem solid #001233;
   border-radius: 0.4rem;
   padding: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.2rem;
 }
 
 .footer {
-  background-color: #0466c8;
+  background-color: #4c956c;
   border-radius: 0.4rem;
   padding: 0.5rem;
 }
@@ -298,7 +305,7 @@ input[type="file"] {
 #items {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* justify-content: center; */
   height: 100vh;
 }
 </style>

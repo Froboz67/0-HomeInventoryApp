@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="page">
     <div>
       <header-module />
     </div>
@@ -12,7 +12,7 @@
         {{ item.name }} | Item id# {{ item.itemId }}
       </header>
       <article class="notes">
-        <p>{{ item.notes }}</p>
+        <p id="notes">{{ item.notes }}</p>
         <div v-if="item" class="item-photo">
           <img :src="photoUrl" alt="item photo" />
         </div>
@@ -137,6 +137,9 @@ export default {
 </script>
 
 <style scoped>
+.page {
+  height: 100vh;
+}
 .card-container {
   display: flex;
   flex-direction: column;
@@ -156,18 +159,19 @@ export default {
   border-radius: 0.4rem;
 }
 .header {
-  background-color: #023e7d;
+  background-color: #2c6e49;
   color: white;
   font-size: 1.2rem;
   font-weight: normal;
 }
 .footer {
-  background-color: #0466c8;
+  background-color: #4c956c;
 }
 .notes {
-  background-color: #979dac;
+  background-color: #1e1e24;
   border: 0.05rem solid #001233;
   box-shadow: 0 0.25rem 0.5rem #33415c;
+  color: white;
 }
 img {
   width: 12rem;
@@ -177,23 +181,25 @@ img {
 
 .descriptor {
   font-size: 0.9rem;
-  color: yellow;
+  color: black;
 }
 
 .date {
   font-size: 0.9rem;
 }
 .aside-one {
-  color: white;
-  background-color: #5c677d;
+  color: black;
+  background-color: #77878b;
   flex: 1 1 10%;
   font-size: 0.9rem;
+  border: 0.1rem solid grey;
 }
 .aside-two {
-  color: white;
-  background-color: #5c677d;
+  color: black;
+  background-color: #77878b;
   flex: 1 1 10%;
   font-size: 0.9rem;
+  border: 0.1rem solid grey;
 }
 #button-links {
   display: flex;
