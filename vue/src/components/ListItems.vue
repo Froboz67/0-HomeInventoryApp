@@ -72,6 +72,11 @@ export default {
 </script>
 
 <style scoped>
+/* .main-div {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+} */
 .wrapper {
   display: flex;
   flex-flow: row wrap;
@@ -88,7 +93,7 @@ export default {
 }
 .wrapper > * {
   padding: 0.6rem;
-  flex: 1 100%;
+  flex: 1 1 auto;
   border-radius: 0.4rem;
 }
 .header {

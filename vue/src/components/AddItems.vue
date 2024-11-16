@@ -20,13 +20,20 @@
             itemid="item-category"
             placeholder="Category"
           />
-          <text-field
-            label="Puchase Date:"
-            id="item-purchase-date"
-            v-model="item.purchaseDate"
-            itemid="item-purchase-date"
-            placeholder="Purchase Date"
-          />
+          <div class="date-value-container">
+            <date-field
+              label="Purchase Date:"
+              id="item-purchase-date"
+              v-model="item.purchaseDate"
+              itemid="item-purchase-date"
+            />
+            <checkbox-field
+              label="This item has personal Value"
+              id="item-is-valuable"
+              v-model="item.isValuable"
+              type="checkbox"
+            />
+          </div>
           <number-field
             label="Price:"
             id="item-purchase-price"
@@ -41,14 +48,6 @@
             itemid="item-current-price"
             placeholder="Current Value"
           />
-          <div class="item-input-group">
-            <label for="item-is-valuable">Is this Item Valuable: </label>
-            <input
-              type="text"
-              id="item-is-valuable"
-              v-model="item.isValuable"
-            />
-          </div>
           <text-field
             label="notes:"
             id="item-notes"
@@ -61,16 +60,8 @@
             id="item-photo"
             @file-upload="handleUploadedFile"
             placeholder="Upload a Picture"
+            ref="fileUploadComponent"
           />
-          <!-- <div class="photo-input-group">
-            <label for="item-photo" id="upload-label">upload photo: </label>
-            <input
-              type="file"
-              id="item-photo"
-              v-on:change="handleFileUpload"
-              ref="fileInput"
-            />
-          </div> -->
         </section>
         <footer class="footer" id="button-links">
           <button class="button-link" type="submit">Save Item</button>
@@ -87,6 +78,8 @@ import HeaderModule from "./componentModules/HeaderModule.vue";
 import TextField from "./componentModules/TextField.vue";
 import NumberField from "./componentModules/NumberField.vue";
 import FileUpload from "./componentModules/FileUpload.vue";
+import DateField from "./componentModules/DateField.vue";
+import CheckboxField from "./componentModules/CheckboxField.vue";
 
 export default {
   components: {
@@ -94,6 +87,8 @@ export default {
     TextField,
     NumberField,
     FileUpload,
+    DateField,
+    CheckboxField,
   },
   data() {
     FileUpload;
@@ -101,7 +96,7 @@ export default {
       item: {
         name: "",
         category: "",
-        purchaseDate: "",
+        purchaseDate: null,
         purchasePrice: null,
         value: null,
         isValuable: false,
@@ -113,32 +108,28 @@ export default {
   methods: {
     handleUploadedFile(file) {
       this.file = file;
-      console.log("file received", this.file);
     },
-    // handleFileUpload(event) {
-    //   this.file = event.target.files[0];
-    //   console.log("here is the file: ", this.file, this.file.name);
-    // },
     saveItem() {
       if (this.item.purchaseDate) {
         this.item.purchaseDate = new Date(this.item.purchaseDate)
           .toISOString()
           .split("T")[0];
       }
-      console.log("complete item object: ", this.item);
       service
         .saveItem(this.item)
         .then((response) => {
           if (response.status === 201) {
             const itemId = response.data.itemId;
+            // don't think this variable is used or needed
             const photoName = response.data.name;
-            console.log("this is the Id: ", itemId, photoName);
             alert("item saved successfully!");
 
             if (this.file) {
               this.savePhoto(itemId);
             } else {
               this.resetForm();
+              // push to list if applicable
+              // this.$router.push({ name: "list" });
             }
           }
         })
@@ -147,7 +138,6 @@ export default {
         });
     },
     savePhoto(itemId) {
-      console.log("save photo called", itemId);
       const photoFileName = this.file.name;
       const photoMetadata = {
         itemId: itemId,
@@ -155,11 +145,9 @@ export default {
         photoUrl:
           "D:/Kevin_Docs/Engel_Docs/Tech_Elevator/workspace/GitHub/HomeInventoryApp/item-photos/",
       };
-      console.log("this is the metadata ", photoMetadata);
       fileService
         .savePhoto(photoMetadata)
         .then((response) => {
-          console.log(response);
           if (response.status === 201) {
             alert("photo metadata saved to db");
             this.uploadPhoto(itemId);
@@ -201,8 +189,8 @@ export default {
         notes: "",
       };
       this.file = null;
-      if (this.$refs.fileInput) {
-        this.$refs.fileInput.value = null;
+      if (this.$refs.fileUploadComponent?.$refs.fileInput) {
+        this.$refs.fileUploadComponent.$refs.fileInput.value = "";
       }
     },
   },
@@ -219,7 +207,6 @@ export default {
   font-weight: normal;
   text-align: center;
   gap: 0.2rem;
-  /* padding: 0.2rem; */
   margin: 0.5rem auto;
   border: solid 1px black;
   max-width: 600px;
@@ -234,6 +221,12 @@ export default {
   padding: 0.2rem;
   border-radius: 0.4rem;
   gap: 0.2rem;
+}
+.date-value-container {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 1rem;
+  align-items: center;
 }
 .header {
   background-color: #2c6e49;
@@ -254,46 +247,10 @@ export default {
   padding: 0.5rem;
   margin-bottom: 0.2rem;
 }
-
 .footer {
   background-color: #4c956c;
   border-radius: 0.4rem;
   padding: 0.5rem;
-}
-
-.item-input-group,
-.photo-input-group {
-  display: flex;
-  margin-bottom: 0.5rem;
-  margin-top: 0.5rem;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-/* label {
-  flex: 0 0 auto;
-  margin-right: 0.5rem;
-}
-input {
-  display: flex;
-  padding: 0.15rem;
-  border: 1px solid #002855;
-  border-radius: 0.25rem;
-  width: 100%;
-  max-width: 100;
-} */
-input[type="file"] {
-  padding: 0.15rem;
-  border: 1px solid #002855;
-  border-radius: 0.25rem;
-  width: 100%;
-  max-width: 100;
-  background-color: white;
-}
-#button-links {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
 }
 .button-link {
   padding: 0.25rem 1rem;
@@ -305,7 +262,6 @@ input[type="file"] {
 #items {
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
   height: 100vh;
 }
 </style>

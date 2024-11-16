@@ -49,6 +49,13 @@ public class PhotoController {
     Method takes an uploaded file from the front end and saves it to a local folder.The storage folder has to be located outside the
     application root.
      */
+    @PostMapping("/update/{itemId}")
+    public ResponseEntity<Photo> updatePhoto(@PathVariable int itemId, @RequestBody Photo photo, Principal principal) {
+        System.out.println("inside update method");
+        User user = userDao.getUserByUsername(principal.getName());
+        photoDao.updatePhoto(photo, photo.getItemId());
+        return ResponseEntity.status(HttpStatus.OK).body(photo);
+    }
     @PostMapping("/photo/upload")
     public ResponseEntity<String> uploadPhoto(@RequestParam("itemId") int itemId, @RequestParam("file")MultipartFile file) {
         String folderPath = "D:/Kevin_Docs/Engel_Docs/Tech_Elevator/workspace/GitHub/HomeInventoryApp/item-photos";
@@ -79,7 +86,7 @@ public class PhotoController {
 
             if (photo == null || photo.getName() == null) {
                 System.out.println("photo or filename was null");
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
 
             String fileName = photo.getName();

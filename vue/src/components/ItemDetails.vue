@@ -1,5 +1,11 @@
 <template>
+  <isLoading v-if="isLoading" :isLoading="isLoading" />
   <div class="page">
+    <!-- <div v-if="isLoading" class="loading-overlay">
+      <div class="loading-image-container">
+        <img src="../assets/imagefiles/loading.webp" alt="Loading" />
+      </div>
+    </div> -->
     <div>
       <header-module />
     </div>
@@ -64,73 +70,94 @@ import fileService from "../services/FileService";
 import service from "../services/ItemService";
 import { format } from "date-fns";
 import HeaderModule from "./componentModules/HeaderModule.vue";
+import isLoading from "./isLoading.vue";
 
 export default {
-  components: { HeaderModule },
+  components: {
+    HeaderModule,
+    isLoading,
+  },
   data() {
     return {
       item: {},
       newDate: "",
       photoUrl: "",
+      isLoading: true,
     };
   },
   methods: {
     getItem() {
       const user = this.$store.state.user;
-      console.log("user id: " + user.id);
       const itemId = this.$route.params.id;
-      console.log("Item id: " + itemId);
-      service.getItem(user.id, itemId).then((response) => {
-        this.item = response.data;
-        console.log("data: ", this.item);
-      });
+      this.isLoading = true;
+      service
+        .getItem(user.id, itemId)
+        .then((response) => {
+          this.item = response.data;
+          this.isLoading = false;
+        })
+        .catch((error) => {
+          console.log("Error getting the item data", error);
+          this.isLoading = false;
+        });
     },
-    getPhoto() {
-      const itemId = this.$route.params.id;
-      console.log("the current itemId: ", itemId);
-      fileService.getPhoto(itemId).then((response) => {
-        this.photo = response.data;
-        console.log("the photo is: ", this.photo);
-      });
-    },
+    // DELETE THIS COMMENTED OUT CODE!
+
+    // getPhoto() {
+    //   const itemId = this.$route.params.id;
+    //   console.log("itemId = ", itemId);
+    //   this.isLoading = true;
+    //   fileService
+    //     .getPhoto(itemId)
+    //     .then((response) => {
+    //       this.photo = response.data;
+    //       this.isLoading = false;
+    //       console.log("photo data = ", this.photo);
+    //     })
+    //     .catch((error) => {
+    //       console.log("error getting photo data", error);
+    //       this.isLoading = false;
+    //     });
+    // },
     getPhotoUrl() {
       const itemId = this.$route.params.id;
+      this.isLoading = true;
       fileService
         .getPhotoUrl(itemId, { responseType: "blob" })
         .then((response) => {
-          const blob = new Blob([response.data], { type: "image/png" });
-          this.photoUrl = URL.createObjectURL(blob);
-          console.log("file data ", this.photoUrl);
+          if (response.status === 204) {
+            this.photoUrl = null;
+          } else {
+            const blob = new Blob([response.data], { type: "image/png" });
+            this.photoUrl = URL.createObjectURL(blob);
+            this.isLoading = false;
+          }
         })
         .catch((error) => {
           console.error("Error fetching photo ", error);
+          this.isLoading = false;
         });
     },
     formatCreatedAt(createdAt) {
       if (!createdAt) {
         return "";
       }
-      console.log("this is createdAt: " + createdAt);
       const splitDate = createdAt.split(".")[0];
-      console.log(splitDate);
       return format(new Date(splitDate), "MMMM dd, yyyy");
     },
     formatUpdatedAt(updatedAt) {
       if (!updatedAt) {
         return "";
       }
-      console.log("this is updatedAt: " + updatedAt);
       const splitDate = updatedAt.split(".")[0];
-      console.log(splitDate);
       const newDate = format(new Date(splitDate), "MMMM dd, yyyy");
       return newDate;
-      // return format(new Date(splitDate), "MMMM dd, yyyy");
     },
   },
   created() {
     this.$store.commit("SET_PAGE_TITLE", "Item Details");
     this.getItem();
-    this.getPhoto();
+    // this.getPhoto();
     this.getPhotoUrl();
   },
 };

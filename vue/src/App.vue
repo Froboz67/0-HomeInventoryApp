@@ -3,27 +3,16 @@
     <header>
       <div class="home">
         <h1>Home Inventory</h1>
-        <div class="buttons">
-          <button
-            class="button-link"
-            v-on:click="$router.push({ name: 'item' })"
-          >
-            Add Items
-          </button>
-          <button
-            class="button-link"
-            v-on:click="$router.push({ name: 'list' })"
-          >
-            View my Items
-          </button>
-        </div>
       </div>
       <div id="nav">
         <router-link id="link-color" v-bind:to="{ name: 'home' }"
-          >My Home</router-link
+          >Home</router-link
         >&nbsp;|&nbsp;
         <router-link id="link-color" v-bind:to="{ name: 'list' }"
           >My Items</router-link
+        >&nbsp;|&nbsp;
+        <router-link id="link-color" v-bind:to="{ name: 'item' }"
+          >Add Items</router-link
         >&nbsp;|&nbsp;
         <router-link
           id="link-color"
@@ -37,31 +26,30 @@
     <router-view />
   </div>
 </template>
-<style scoped>
-html {
-  display: flex;
-  align-content: center;
-  justify-content: center;
-  height: 100%;
+<style>
+* {
+  outline: 1px solid red;
+}
+body {
   margin: 0;
   padding: 0;
-  background-color: #001233;
 }
-.home {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+
+html {
+  height: 100%;
 }
-/* old original style */
 #home-inventory-app {
-  display: flex;
-  flex-direction: column;
+  min-height: 100vh;
   background-color: #a5a5a5;
 }
-#link-color,
+
 #nav {
   color: black;
   display: flex;
   justify-content: flex-end;
+  margin: 2rem;
+}
+#link-color {
+  color: black;
 }
 </style>

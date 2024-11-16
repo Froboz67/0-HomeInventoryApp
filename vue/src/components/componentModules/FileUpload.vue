@@ -6,7 +6,7 @@
       :id="id"
       @change="handleFileUpload"
       ref="fileInput"
-      placeholder="placeholder"
+      placeholder="Upload a Photo"
     />
   </div>
 </template>
@@ -54,5 +54,6 @@ input {
   width: 100%;
   max-width: 100;
   background-color: white;
+  color: black;
 }
 </style>
