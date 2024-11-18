@@ -16,7 +16,11 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@CrossOrigin (origins = "http://127.0.0.1:5173")
+// desktop app
+//@CrossOrigin (origins = "http://127.0.0.1:5173")
+// laptop app
+@CrossOrigin
+
 @PreAuthorize("isAuthenticated()")
 public class ItemController {
 
