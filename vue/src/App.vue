@@ -27,9 +27,9 @@
   </div>
 </template>
 <style>
-* {
+/* * {
   outline: 1px solid red;
-}
+} */
 body {
   margin: 0;
   padding: 0;

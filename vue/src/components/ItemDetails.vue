@@ -101,24 +101,6 @@ export default {
           this.isLoading = false;
         });
     },
-    // DELETE THIS COMMENTED OUT CODE!
-
-    // getPhoto() {
-    //   const itemId = this.$route.params.id;
-    //   console.log("itemId = ", itemId);
-    //   this.isLoading = true;
-    //   fileService
-    //     .getPhoto(itemId)
-    //     .then((response) => {
-    //       this.photo = response.data;
-    //       this.isLoading = false;
-    //       console.log("photo data = ", this.photo);
-    //     })
-    //     .catch((error) => {
-    //       console.log("error getting photo data", error);
-    //       this.isLoading = false;
-    //     });
-    // },
     getPhotoUrl() {
       const itemId = this.$route.params.id;
       this.isLoading = true;
@@ -131,6 +113,7 @@ export default {
             const blob = new Blob([response.data], { type: "image/png" });
             this.photoUrl = URL.createObjectURL(blob);
             this.isLoading = false;
+            console.log("photoUrl ", this.photoUrl);
           }
         })
         .catch((error) => {

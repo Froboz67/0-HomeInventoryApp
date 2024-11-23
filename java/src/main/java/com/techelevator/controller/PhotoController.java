@@ -52,6 +52,7 @@ public class PhotoController {
     @PostMapping("/update/{itemId}")
     public ResponseEntity<Photo> updatePhoto(@PathVariable int itemId, @RequestBody Photo photo, Principal principal) {
         System.out.println("inside update method");
+        System.out.println(photo);
         User user = userDao.getUserByUsername(principal.getName());
         photoDao.updatePhoto(photo, photo.getItemId());
         return ResponseEntity.status(HttpStatus.OK).body(photo);
@@ -103,6 +104,7 @@ public class PhotoController {
             }
 
             if (urlResource.exists()) {
+                System.out.println("filename is " + photo.getName());
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + urlResource.getFilename() + "\"")
                         .body(urlResource);
@@ -118,6 +120,7 @@ public class PhotoController {
     @DeleteMapping("/delete/{itemId}")
     public ResponseEntity<Photo> deletePhoto(@PathVariable int itemId, Photo photo, Principal principal) {
         User user = userDao.getUserByUsername(principal.getName());
+        System.out.println("photo before deletion " + photo);
         photoDao.deletePhoto(photo, itemId);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
     }

@@ -151,8 +151,10 @@ export default {
     getPhoto() {
       const itemId = this.$route.params.id;
       fileService.getPhoto(itemId).then((response) => {
+        console.log("Fetched photo data:", response.data);
         this.photo = response.data;
         console.log("this is the photo: ", this.photo);
+        // this.file = new File([response.data], this.photo.name);
       });
     },
     // need to test this method, need the photo file if there is a photo
@@ -166,11 +168,13 @@ export default {
         .then((response) => {
           if (response.status === 204) {
             this.photoUrl = null;
+            this.file = null;
             console.log("there is no photo file", response.status);
           } else {
             const blob = new Blob([response.data], { type: "image/png" });
             this.photoUrl = URL.createObjectURL(blob);
             console.log("there is a photo file", response.status);
+
             // after implementing the isLoading visual
             // this.isLoading = false;
           }
@@ -204,9 +208,21 @@ export default {
                 this.file.name,
                 itemId
               );
+              // this.savePhoto(itemId);
+              // why does the program think there is a file?
               this.updatePhoto(itemId);
+              this.resetForm();
+              // push to list if applicable
+              this.$router.push({ name: "list" });
             } else {
               console.log("there is no file present with this item");
+              /*
+              order of operations for photo file saving in the event there
+              is NOT a photo file present from the user selection:
+              1 - call savePhoto() to store the metadata in database
+              2  - uploadPhoto() is called to store the actual file locally
+              */
+              this.savePhoto(itemId);
               this.resetForm();
               // push to list if applicable
               this.$router.push({ name: "list" });
@@ -241,6 +257,7 @@ export default {
         });
     },
     updatePhoto(itemId) {
+      this.getPhoto(itemId);
       const photoFileName = this.file.name;
       const photoMetadata = {
         itemId: itemId,
@@ -263,6 +280,7 @@ export default {
         });
     },
     uploadPhoto(itemId) {
+      console.log(this.file);
       if (!this.file) return;
 
       const formData = new FormData();
@@ -331,6 +349,7 @@ export default {
     this.getItem();
     this.getPhoto();
     this.getPhotoUrl();
+    console.log("this is the photoUrl ", this.photoUrl);
   },
 };
 </script>

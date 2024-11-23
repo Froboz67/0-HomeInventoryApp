@@ -51,10 +51,10 @@ public class JdbcPhotoDao implements PhotoDao {
         Photo updatedPhoto = null;
         photo.setUploadedAt(LocalDateTime.now());
         final String sql = "UPDATE public.item_photos\n" +
-                "\tSET photo_id=?, item_id=?, photo_name=?, photo_url=?, uploaded_at=?\n" +
+                "\tSET item_id=?, photo_name=?, photo_url=?, uploaded_at=?\n" +
                 "\tWHERE item_id =?";
         try {
-            int numberOfRowsAffected = jdbcTemplate.update(sql, photo.getPhotoId(), photo.getItemId(),
+            int numberOfRowsAffected = jdbcTemplate.update(sql, photo.getItemId(),
                     photo.getName(), photo.getPhotoUrl(), photo.getUploadedAt(),photo.getItemId());
             updatedPhoto = getPhoto(photo.getItemId());
             if (numberOfRowsAffected == 0) {
@@ -63,7 +63,7 @@ public class JdbcPhotoDao implements PhotoDao {
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("unable to connect to database", e);
         }
-        System.out.println(updatedPhoto);
+        System.out.println("updated photo: " + updatedPhoto);
         return updatedPhoto;
     }
     @Override

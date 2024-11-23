@@ -124,12 +124,15 @@ export default {
             const photoName = response.data.name;
             alert("item saved successfully!");
 
+            // checking for the existence of a photo file
             if (this.file) {
+              // calls the savePhoto method in the event the is
+              // a file in the UI
               this.savePhoto(itemId);
             } else {
               this.resetForm();
               // push to list if applicable
-              // this.$router.push({ name: "list" });
+              this.$router.push({ name: "list" });
             }
           }
         })
@@ -137,6 +140,11 @@ export default {
           console.log(error);
         });
     },
+    /* 
+    savePhoto() is only saving the photo metadata to the database
+    the uploadPhoto() is what truly uploads the photo file to 
+    local storage
+    */
     savePhoto(itemId) {
       const photoFileName = this.file.name;
       const photoMetadata = {
@@ -145,11 +153,14 @@ export default {
         photoUrl:
           "D:/Kevin_Docs/Engel_Docs/Tech_Elevator/workspace/GitHub/HomeInventoryApp/item-photos/",
       };
+      console.log("this is the metadata ", photoMetadata);
       fileService
         .savePhoto(photoMetadata)
         .then((response) => {
           if (response.status === 201) {
             alert("photo metadata saved to db");
+            // after metadata has been successfully saved the photo is uploaded
+            // to local storage
             this.uploadPhoto(itemId);
           }
         })
@@ -171,6 +182,7 @@ export default {
           if (response.status === 201) {
             alert("photo saved!");
             this.resetForm();
+            this.$router.push({ name: "list" });
           }
         })
         .catch((error) => {
