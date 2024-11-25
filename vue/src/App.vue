@@ -30,6 +30,9 @@
 /* * {
   outline: 1px solid red;
 } */
+.home {
+  justify-items: center;
+}
 body {
   margin: 0;
   padding: 0;
@@ -46,10 +49,17 @@ html {
 #nav {
   color: black;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   margin: 2rem;
+  max-width: 750px;
+  margin: 1rem auto;
 }
 #link-color {
   color: black;
+}
+@media (max-width: 1024px) {
+  #nav {
+    justify-content: center;
+  }
 }
 </style>

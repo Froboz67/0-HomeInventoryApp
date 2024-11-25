@@ -129,11 +129,13 @@ export default {
       showFileUpload: false,
       photo: null,
       isNewPhoto: false,
+      isUpdatedPhoto: false,
     };
   },
   methods: {
     renderFileUpload() {
       this.showFileUpload = true;
+      this.isUpdatedPhoto = true;
     },
     handleUploadedFile(file) {
       console.log("handleUploadedFile() Update Items");
@@ -227,7 +229,7 @@ export default {
               return;
             }
 
-            if (this.file) {
+            if (this.file && this.isUpdatedPhoto) {
               console.log(
                 "updateItem() there is a photo file with this item: ",
                 this.file.name,
