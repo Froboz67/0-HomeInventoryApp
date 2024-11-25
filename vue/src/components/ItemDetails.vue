@@ -1,7 +1,13 @@
 <template>
-  <div>
+  <isLoading v-if="isLoading" :isLoading="isLoading" />
+  <div class="page">
+    <!-- <div v-if="isLoading" class="loading-overlay">
+      <div class="loading-image-container">
+        <img src="../assets/imagefiles/loading.webp" alt="Loading" />
+      </div>
+    </div> -->
     <div>
-      <h1>Item Details</h1>
+      <header-module />
     </div>
     <div
       class="card-container"
@@ -12,7 +18,7 @@
         {{ item.name }} | Item id# {{ item.itemId }}
       </header>
       <article class="notes">
-        <p>{{ item.notes }}</p>
+        <p id="notes">{{ item.notes }}</p>
         <div v-if="item" class="item-photo">
           <img :src="photoUrl" alt="item photo" />
         </div>
@@ -21,6 +27,10 @@
         <div class="descriptor">Category:</div>
         <div>{{ item.category }}</div>
         <div class="descriptor">Room:</div>
+        <div class="descriptor">Purchase Date:</div>
+        <div class="date">
+          {{ item.purchaseDate ? formatCreatedAt(item.purchaseDate) : "" }}
+        </div>
         <div class="descriptor">Purchase Price:</div>
         <div>${{ item.purchasePrice }}</div>
         <div class="descriptor">Estimated Value:</div>
@@ -59,80 +69,86 @@
 import fileService from "../services/FileService";
 import service from "../services/ItemService";
 import { format } from "date-fns";
+import HeaderModule from "./componentModules/HeaderModule.vue";
+import isLoading from "./isLoading.vue";
 
 export default {
+  components: {
+    HeaderModule,
+    isLoading,
+  },
   data() {
     return {
       item: {},
       newDate: "",
       photoUrl: "",
+      isLoading: true,
     };
   },
   methods: {
     getItem() {
       const user = this.$store.state.user;
-      console.log("user id: " + user.id);
       const itemId = this.$route.params.id;
-      console.log("Item id: " + itemId);
-      service.getItem(user.id, itemId).then((response) => {
-        this.item = response.data;
-        console.log("data: ", this.item);
-      });
-    },
-    getPhoto() {
-      const itemId = this.$route.params.id;
-      console.log("the current itemId: ", itemId);
-      fileService.getPhoto(itemId).then((response) => {
-        this.photo = response.data;
-        console.log("the photo is: ", this.photo);
-      });
+      this.isLoading = true;
+      service
+        .getItem(user.id, itemId)
+        .then((response) => {
+          this.item = response.data;
+          this.isLoading = false;
+        })
+        .catch((error) => {
+          console.log("Error getting the item data", error);
+          this.isLoading = false;
+        });
     },
     getPhotoUrl() {
       const itemId = this.$route.params.id;
+      this.isLoading = true;
       fileService
         .getPhotoUrl(itemId, { responseType: "blob" })
         .then((response) => {
-          const blob = new Blob([response.data], { type: "image/png" });
-          this.photoUrl = URL.createObjectURL(blob);
-          console.log("file data ", this.photoUrl);
+          if (response.status === 204) {
+            this.photoUrl = null;
+          } else {
+            const blob = new Blob([response.data], { type: "image/png" });
+            this.photoUrl = URL.createObjectURL(blob);
+            this.isLoading = false;
+            console.log("photoUrl ", this.photoUrl);
+          }
         })
         .catch((error) => {
           console.error("Error fetching photo ", error);
+          this.isLoading = false;
         });
     },
     formatCreatedAt(createdAt) {
       if (!createdAt) {
         return "";
       }
-      console.log("this is createdAt: " + createdAt);
       const splitDate = createdAt.split(".")[0];
-      console.log(splitDate);
       return format(new Date(splitDate), "MMMM dd, yyyy");
     },
     formatUpdatedAt(updatedAt) {
       if (!updatedAt) {
         return "";
       }
-      console.log("this is updatedAt: " + updatedAt);
       const splitDate = updatedAt.split(".")[0];
-      console.log(splitDate);
       const newDate = format(new Date(splitDate), "MMMM dd, yyyy");
       return newDate;
-      // return format(new Date(splitDate), "MMMM dd, yyyy");
     },
   },
   created() {
+    this.$store.commit("SET_PAGE_TITLE", "Item Details");
     this.getItem();
-    this.getPhoto();
+    // this.getPhoto();
     this.getPhotoUrl();
   },
 };
 </script>
 
 <style scoped>
-h1 {
-  text-align: center;
-  color: white;
+.page {
+  height: 100vh;
 }
 .card-container {
   display: flex;
@@ -153,18 +169,19 @@ h1 {
   border-radius: 0.4rem;
 }
 .header {
-  background-color: #023e7d;
+  background-color: #2c6e49;
   color: white;
   font-size: 1.2rem;
   font-weight: normal;
 }
 .footer {
-  background-color: #0466c8;
+  background-color: #4c956c;
 }
 .notes {
-  background-color: #979dac;
+  background-color: #1e1e24;
   border: 0.05rem solid #001233;
   box-shadow: 0 0.25rem 0.5rem #33415c;
+  color: white;
 }
 img {
   width: 12rem;
@@ -173,22 +190,26 @@ img {
 }
 
 .descriptor {
-  font-size: 0.75rem;
+  font-size: 0.9rem;
+  color: black;
 }
 
 .date {
   font-size: 0.9rem;
 }
 .aside-one {
-  color: white;
-  background-color: #5c677d;
+  color: black;
+  background-color: #77878b;
   flex: 1 1 10%;
+  font-size: 0.9rem;
+  border: 0.1rem solid grey;
 }
 .aside-two {
-  color: white;
-  background-color: #5c677d;
+  color: black;
+  background-color: #77878b;
   flex: 1 1 10%;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
+  border: 0.1rem solid grey;
 }
 #button-links {
   display: flex;

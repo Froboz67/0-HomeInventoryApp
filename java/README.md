@@ -1,7 +1,7 @@
 # Project Name
 Home Inventory
 
-![Project Logo or Screenshot](link-to-image.png) <!-- Optional image of the app -->
+![Project Logo or Screenshot](readme-image.png) <!-- Optional image of the app -->
 
 ## Key Features
 
@@ -10,13 +10,8 @@ Home Inventory
 ## Table of Contents
 1. [Overview](#overview)
 2. [Features](#features)
-3. [Installation](#installation)
-4. [Usage](#usage)
-5. [API Reference](#api-reference)
-6. [Database Schema](#database-schema)
-7. [Contributing](#contributing)
-8. [License](#license)
-9. [Contact](#contact)
+3. [Database Schema](db-schema.png)
+
 
 ---
 
@@ -30,9 +25,6 @@ local folder.
     - User authentication with secure passwords.
     - Item organization by category, create and update dates, current value.
       - purchase price, and purchase date.
-    - Document and photo storage.
+    - Photo upload and storage.
 
-## Installation
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/username/repository-name.git
+

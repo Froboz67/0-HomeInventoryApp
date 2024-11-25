@@ -1,58 +1,81 @@
 <template>
   <div id="items" class="text-center">
-    <h1>Update Item</h1>
+    <!-- <h1>Update Item</h1> -->
+    <div>
+      <header-module />
+    </div>
     <div class="form-container">
       <form v-on:submit.prevent="updateItem">
         <header class="header">{{ item.name }}</header>
         <section class="section">
-          <div class="item-input-group">
-            <label for="item-name">Name of Item: </label>
-            <input type="text" id="item-name" v-model="item.name" required />
-          </div>
-          <div class="item-input-group">
-            <label for="item-category">Category of Item: </label>
-            <input type="text" id="item-category" v-model="item.category" />
-          </div>
-          <div class="item-input-group">
-            <label for="item-purchase-date">Purchase Date of Item: </label>
-            <input
-              type="text"
+          <text-field
+            label="Name:"
+            id="item-name"
+            v-model="item.name"
+            itemid="item-name"
+            placeholder="Name"
+            required
+          />
+          <text-field
+            label="Category:"
+            id="item-category"
+            v-model="item.category"
+            itemid="item-category"
+            placeholder="Category"
+          />
+          <div class="date-value-container">
+            <date-field
+              label="Purchase Date:"
               id="item-purchase-date"
               v-model="item.purchaseDate"
+              itemid="item-purchase-date"
             />
-          </div>
-          <div class="item-input-group">
-            <label for="item-purchase-price">Purchase Price of Item: </label>
-            <input
-              type="number"
-              id="item-purchase-price"
-              v-model.number="item.purchasePrice"
-            />
-          </div>
-          <div class="item-input-group">
-            <label for="item-value">Current Value of Item: </label>
-            <input type="number" id="item-value" v-model.number="item.value" />
-          </div>
-          <div class="item-input-group">
-            <label for="item-is-valuable">Is this Item Valuable: </label>
-            <input
-              type="text"
+            <checkbox-field
+              label="This item has personal Value"
               id="item-is-valuable"
               v-model="item.isValuable"
+              type="checkbox"
             />
           </div>
-          <div class="item-input-group">
-            <label for="item-notes">Notes about this Item: </label>
-            <input type="text" id="item-notes" v-model="item.notes" />
-          </div>
-          <div class="photo-input-group">
-            <label for="item-photo">upload photo: </label>
-            <input
-              type="file"
+          <number-field
+            label="Price:"
+            id="item-purchase-price"
+            v-model="item.purchasePrice"
+            itemid="item-purchase-price"
+            placeholder="Purchase Price"
+          />
+          <number-field
+            label="Value:"
+            id="item-current-value"
+            v-model="item.value"
+            itemid="item-current-price"
+            placeholder="Current Value"
+          />
+          <text-field
+            label="notes:"
+            id="item-notes"
+            v-model="item.notes"
+            itemid="item-notes"
+            placeholder="Notes"
+          />
+          <div v-if="this.photoUrl === null || showFileUpload">
+            <file-upload
+              label="Upload Photo"
               id="item-photo"
-              v-on:change="handleFileUpload"
-              ref="fileInput"
+              @file-upload="handleUploadedFile"
+              @file-changed="updateFileStatus"
+              placeholder="Upload a Picture"
+              ref="fileUploadComponent"
             />
+          </div>
+          <div v-else>
+            <button class="button-link" @click.prevent="renderFileUpload">
+              edit photo
+            </button>
+            <!-- here is where the event should go
+             after the edit photo button is clicked
+             the <file-upload component should render on screen
+             after the button is clicked -->
           </div>
         </section>
         <footer class="footer">
@@ -72,7 +95,22 @@
 <script>
 import fileService from "../services/FileService";
 import service from "../services/ItemService";
+import HeaderModule from "./componentModules/HeaderModule.vue";
+import TextField from "./componentModules/TextField.vue";
+import DateField from "./componentModules/DateField.vue";
+import CheckboxField from "./componentModules/CheckboxField.vue";
+import NumberField from "./componentModules/NumberField.vue";
+import FileUpload from "./componentModules/FileUpload.vue";
+
 export default {
+  components: {
+    HeaderModule,
+    TextField,
+    DateField,
+    CheckboxField,
+    NumberField,
+    FileUpload,
+  },
   data() {
     return {
       item: {
@@ -84,13 +122,32 @@ export default {
         isValuable: false,
         notes: "",
       },
+      file: null,
+      photoMetadata: {},
+      photoId: null,
+      photoUrl: null,
+      showFileUpload: false,
       photo: null,
+      isNewPhoto: false,
+      isUpdatedPhoto: false,
     };
   },
   methods: {
+    renderFileUpload() {
+      this.showFileUpload = true;
+      this.isUpdatedPhoto = true;
+    },
+    handleUploadedFile(file) {
+      console.log("handleUploadedFile() Update Items");
+      this.file = file;
+      // this.showFileUpload = false;
+    },
     handleFileUpload(event) {
       this.file = event.target.files[0];
       console.log("here is the file: ", this.file, this.file.name);
+    },
+    updateFileStatus(isChanged) {
+      this.isNewPhoto = isChanged;
     },
     getItem() {
       const user = this.$store.state.user;
@@ -105,9 +162,49 @@ export default {
     getPhoto() {
       const itemId = this.$route.params.id;
       fileService.getPhoto(itemId).then((response) => {
-        this.photo = response.data;
-        console.log("this is the photo: ", this.photo);
+        console.log("getPhoto() Fetched photo data:", response.data);
+        this.photoMetadata = response.data;
+        this.photoId = response.data.photoId;
+        console.log("getPhoto() metaData:", this.photoMetadata);
+        console.log("getPhoto() photoId; ", this.photoId);
+        console.log("getPhoto() photoname; ", this.photoMetadata.name);
+
+        this.file = new File([response.data], this.photo);
+        console.log("getPhoto() the file", this.file);
       });
+    },
+    // need to test this method, need the photo file if there is a photo
+    // present in the item object...
+    getPhotoUrl() {
+      const itemId = this.$route.params.id;
+      console.log("this item", itemId);
+      // after implementing the isLoading visual
+      // this.isLoading = true;
+      fileService
+        .getPhotoUrl(itemId, { responseType: "blob" })
+        .then((response) => {
+          if (response.status === 204) {
+            this.photoUrl = null;
+            this.file = null;
+            this.isNewPhoto = true;
+            console.log(
+              "getPhotoUrl() there is no photo file",
+              response.status
+            );
+          } else {
+            const blob = new Blob([response.data], { type: "image/png" });
+            this.photoUrl = URL.createObjectURL(blob);
+            console.log("there is a photo file", this.photoUrl);
+
+            // after implementing the isLoading visual
+            // this.isLoading = false;
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching photo ", error);
+          // after implementing the isLoading visual
+          // this.isLoading = false;
+        });
     },
     updateItem() {
       if (this.item.purchaseDate) {
@@ -119,12 +216,34 @@ export default {
       console.log("user id: " + user.id);
       const itemId = this.$route.params.id;
       console.log("Item id: " + itemId);
+      // const photoId = this.$route.params.id;
+      // console.log("updateItem() photoId: ", photoId);
       service
         .updateItem(user.id, itemId, this.item)
         .then((response) => {
           if (response.status === 200) {
-            alert("item updated successfully!");
-            this.$router.push({ name: "list" });
+            alert("item updated successfully! ");
+            console.log("photo status", this.isNewPhoto);
+            if (!this.isNewPhoto) {
+              this.$router.push({ name: "list" });
+              return;
+            }
+
+            if (this.file && this.isUpdatedPhoto) {
+              console.log(
+                "updateItem() there is a photo file with this item: ",
+                this.file.name,
+                itemId
+              );
+              this.updatePhoto(itemId);
+              this.$router.push({ name: "list" });
+            } else {
+              console.log(
+                "updateItem() there is no file present with this item"
+              );
+              this.savePhoto(itemId);
+              this.$router.push({ name: "list" });
+            }
           }
         })
         .catch((error) => {
@@ -139,7 +258,7 @@ export default {
         photoUrl:
           "D:/Kevin_Docs/Engel_Docs/Tech_Elevator/workspace/GitHub/HomeInventoryApp/item-photos/",
       };
-      console.log("this is the metadata ", photoMetadata);
+      console.log("savePhoto() this is the metadata ", photoMetadata);
       fileService
         .savePhoto(photoMetadata)
         .then((response) => {
@@ -154,7 +273,32 @@ export default {
           alert("there was a problem saving the photo");
         });
     },
+    updatePhoto(itemId) {
+      // this.getPhoto(itemId);
+      const photoFileName = this.file.name;
+      const photoMetadata = {
+        photoId: this.photoId,
+        itemId: itemId,
+        name: photoFileName,
+        photoUrl:
+          "D:/Kevin_Docs/Engel_Docs/Tech_Elevator/workspace/GitHub/HomeInventoryApp/item-photos/",
+      };
+      console.log("updatePhoto() this is the metadata ", photoMetadata);
+      fileService
+        .updatePhoto(photoMetadata, itemId)
+        .then((response) => {
+          if (response.status === 200) {
+            alert("updatePhoto() photo updated successfully");
+            this.uploadPhoto(itemId);
+          }
+        })
+        .catch((error) => {
+          console.log("updating photo error!", error);
+          alert("there was a problem updating the photo");
+        });
+    },
     uploadPhoto(itemId) {
+      console.log("upload file on update method", this.file);
       if (!this.file) return;
 
       const formData = new FormData();
@@ -219,40 +363,43 @@ export default {
     },
   },
   created() {
+    this.$store.commit("SET_PAGE_TITLE", "Update Items");
     this.getItem();
     this.getPhoto();
+    this.getPhotoUrl();
+    console.log("this is the photoUrl ", this.photoUrl);
   },
 };
 </script>
 
 
 <style scoped>
-h1 {
-  text-align: center;
-  color: white;
-}
 .form-container {
   display: flex;
   flex-direction: column;
   font-weight: normal;
   text-align: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
+  gap: 0.2rem;
   margin: 0.5rem auto;
   border: solid 1px black;
   max-width: 600px;
   box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
   background-color: #979dac;
-
   box-sizing: border-box;
 }
 .form-container > * {
   padding: 0.4rem;
   border-radius: 0.4rem;
 }
+.date-value-container {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 1rem;
+  align-items: center;
+}
 .header {
-  background-color: #023e7d;
+  background-color: #2c6e49;
   color: white;
   font-size: 2.2rem;
   font-weight: normal;
@@ -266,39 +413,12 @@ h1 {
   border-radius: 0.4rem;
   padding: 0.5rem;
   margin-bottom: 0.5rem;
+  background-color: #77878b;
 }
 .footer {
-  background-color: #0466c8;
+  background-color: #4c956c;
   border-radius: 0.4rem;
   padding: 0.5rem;
-}
-.item-input-group,
-.photo-input-group {
-  display: flex;
-  margin-bottom: 0.5rem;
-  margin-top: 0.5rem;
-  align-items: center;
-  justify-content: flex-start;
-}
-label {
-  flex: 0 0 auto;
-  margin-right: 0.5rem;
-}
-input {
-  flex: 1;
-  padding: 0.15rem;
-  border: 1px solid #002855;
-  border-radius: 0.25rem;
-  width: 100%;
-  max-width: 100;
-}
-input[type="file"] {
-  padding: 0.15rem;
-  border: 1px solid #002855;
-  border-radius: 0.25rem;
-  width: 100%;
-  max-width: 100;
-  background-color: white;
 }
 #button-links {
   display: flex;
@@ -311,5 +431,10 @@ input[type="file"] {
   border-radius: 4px;
   cursor: pointer;
   border: solid black 0.025rem;
+}
+#items {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 </style>

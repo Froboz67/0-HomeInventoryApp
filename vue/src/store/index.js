@@ -6,6 +6,7 @@ export function createStore(currentToken, currentUser) {
     state: {
       token: currentToken || '',
       user: currentUser || {},
+      pageTitle: '',
     },
     mutations: {
       SET_AUTH_TOKEN(state, token) {
@@ -33,6 +34,9 @@ export function createStore(currentToken, currentUser) {
       },
       SET_PHOTO(state, photo) {
         state.photo = photo;
+      },
+      SET_PAGE_TITLE(state, title) {
+        state.pageTitle = title;
       }
     },
   });

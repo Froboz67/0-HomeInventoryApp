@@ -26,6 +26,12 @@ if (currentToken) {
 const store = createStore(currentToken, currentUser);
 
 const app = createApp(CapstoneApp);
+
+router.afterEach((to) => {
+  const title = to.meta.title || "Default Title";
+  store.commit("SET_PAGE_TITLE", title);
+});
+
 app.use(store);
 app.use(router);
 app.mount('#app');

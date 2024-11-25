@@ -41,7 +41,7 @@ const routes = [
     name: 'list',
     component: ListView,
     meta: {
-      requiresAuth: true
+      requiresAuth: true,
     }
   },
   {
@@ -49,7 +49,7 @@ const routes = [
     name: 'details',
     component: DetailsView,
     meta: {
-      requiresAuth: true
+      requiresAuth: true,
     }
   },
   {
@@ -57,7 +57,7 @@ const routes = [
     name: 'update',
     component: UpdateView,
     meta: {
-      requiresAuth: true
+      requiresAuth: true,
     }
   },
   {

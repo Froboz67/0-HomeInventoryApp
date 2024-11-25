@@ -1,59 +1,67 @@
 <template>
   <div id="items" class="text-center">
-    <h1>Add Items</h1>
+    <header-module />
     <div class="form-container">
       <form v-on:submit.prevent="saveItem">
         <header class="header">{{ item.name || "Item Name" }}</header>
         <section class="section">
-          <div class="item-input-group">
-            <label for="item-name">Name of Item: </label>
-            <input type="text" id="item-name" v-model="item.name" required />
-          </div>
-          <div class="item-input-group">
-            <label for="item-category">Category of Item: </label>
-            <input type="text" id="item-category" v-model="item.category" />
-          </div>
-          <div class="item-input-group">
-            <label for="item-purchase-date">Purchase Date of Item: </label>
-            <input
-              type="text"
+          <text-field
+            label="Name:"
+            id="item-name"
+            v-model="item.name"
+            itemid="item-name"
+            placeholder="Name"
+            required
+          />
+          <text-field
+            label="Category:"
+            id="item-category"
+            v-model="item.category"
+            itemid="item-category"
+            placeholder="Category"
+          />
+          <div class="date-value-container">
+            <date-field
+              label="Purchase Date:"
               id="item-purchase-date"
               v-model="item.purchaseDate"
+              itemid="item-purchase-date"
             />
-          </div>
-          <div class="item-input-group">
-            <label for="item-purchase-price">Purchase Price of Item: </label>
-            <input
-              type="number"
-              id="item-purchase-price"
-              v-model.number="item.purchasePrice"
-            />
-          </div>
-          <div class="item-input-group">
-            <label for="item-value">Current Value of Item: </label>
-            <input type="number" id="item-value" v-model.number="item.value" />
-          </div>
-          <div class="item-input-group">
-            <label for="item-is-valuable">Is this Item Valuable: </label>
-            <input
-              type="text"
+            <checkbox-field
+              label="This item has personal Value"
               id="item-is-valuable"
               v-model="item.isValuable"
+              type="checkbox"
             />
           </div>
-          <div class="item-input-group">
-            <label for="item-notes">Notes about this Item: </label>
-            <input type="text" id="item-notes" v-model="item.notes" />
-          </div>
-          <div class="photo-input-group">
-            <label for="item-photo" id="upload-label">upload photo: </label>
-            <input
-              type="file"
-              id="item-photo"
-              v-on:change="handleFileUpload"
-              ref="fileInput"
-            />
-          </div>
+          <number-field
+            label="Price:"
+            id="item-purchase-price"
+            v-model="item.purchasePrice"
+            itemid="item-purchase-price"
+            placeholder="Purchase Price"
+          />
+          <number-field
+            label="Value:"
+            id="item-current-value"
+            v-model="item.value"
+            itemid="item-current-price"
+            placeholder="Current Value"
+          />
+          <text-field
+            label="notes:"
+            id="item-notes"
+            v-model="item.notes"
+            itemid="item-notes"
+            placeholder="Notes"
+          />
+          <file-upload
+            label="Upload Photo"
+            id="item-photo"
+            @file-upload="handleUploadedFile"
+            placeholder="Upload a Picture"
+            ref="fileUploadComponent"
+          />
         </section>
         <footer class="footer" id="button-links">
           <button class="button-link" type="submit">Save Item</button>
@@ -66,14 +74,29 @@
 <script>
 import service from "../services/ItemService.js";
 import fileService from "../services/FileService.js";
+import HeaderModule from "./componentModules/HeaderModule.vue";
+import TextField from "./componentModules/TextField.vue";
+import NumberField from "./componentModules/NumberField.vue";
+import FileUpload from "./componentModules/FileUpload.vue";
+import DateField from "./componentModules/DateField.vue";
+import CheckboxField from "./componentModules/CheckboxField.vue";
 
 export default {
+  components: {
+    HeaderModule,
+    TextField,
+    NumberField,
+    FileUpload,
+    DateField,
+    CheckboxField,
+  },
   data() {
+    FileUpload;
     return {
       item: {
         name: "",
         category: "",
-        purchaseDate: "",
+        purchaseDate: null,
         purchasePrice: null,
         value: null,
         isValuable: false,
@@ -83,9 +106,9 @@ export default {
     };
   },
   methods: {
-    handleFileUpload(event) {
-      this.file = event.target.files[0];
-      console.log("here is the file: ", this.file, this.file.name);
+    handleUploadedFile(file) {
+      console.log("handleUploadedFile() Add Items");
+      this.file = file;
     },
     saveItem() {
       if (this.item.purchaseDate) {
@@ -93,20 +116,24 @@ export default {
           .toISOString()
           .split("T")[0];
       }
-      console.log("complete item object: ", this.item);
       service
         .saveItem(this.item)
         .then((response) => {
           if (response.status === 201) {
             const itemId = response.data.itemId;
+            // don't think this variable is used or needed
             const photoName = response.data.name;
-            console.log("this is the Id: ", itemId, photoName);
+            alert("item saved successfully!");
 
+            // checking for the existence of a photo file
             if (this.file) {
+              // calls the savePhoto method in the event the is
+              // a file in the UI
               this.savePhoto(itemId);
             } else {
-              alert("item saved successfully!");
               this.resetForm();
+              // push to list if applicable
+              this.$router.push({ name: "list" });
             }
           }
         })
@@ -114,6 +141,11 @@ export default {
           console.log(error);
         });
     },
+    /* 
+    savePhoto() is only saving the photo metadata to the database
+    the uploadPhoto() is what truly uploads the photo file to 
+    local storage
+    */
     savePhoto(itemId) {
       const photoFileName = this.file.name;
       const photoMetadata = {
@@ -126,9 +158,10 @@ export default {
       fileService
         .savePhoto(photoMetadata)
         .then((response) => {
-          console.log(response);
           if (response.status === 201) {
             alert("photo metadata saved to db");
+            // after metadata has been successfully saved the photo is uploaded
+            // to local storage
             this.uploadPhoto(itemId);
           }
         })
@@ -138,6 +171,7 @@ export default {
         });
     },
     uploadPhoto(itemId) {
+      console.log("upload file on initial create ", this.file);
       if (!this.file) return;
 
       const formData = new FormData();
@@ -150,6 +184,7 @@ export default {
           if (response.status === 201) {
             alert("photo saved!");
             this.resetForm();
+            this.$router.push({ name: "list" });
           }
         })
         .catch((error) => {
@@ -168,26 +203,24 @@ export default {
         notes: "",
       };
       this.file = null;
-      if (this.$refs.fileInput) {
-        this.$refs.fileInput.value = null;
+      if (this.$refs.fileUploadComponent?.$refs.fileInput) {
+        this.$refs.fileUploadComponent.$refs.fileInput.value = "";
       }
     },
+  },
+  created() {
+    this.$store.commit("SET_PAGE_TITLE", "Add Items");
   },
 };
 </script>
 
 <style scoped>
-h1 {
-  text-align: center;
-  color: white;
-}
 .form-container {
   display: flex;
   flex-direction: column;
   font-weight: normal;
   text-align: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
+  gap: 0.2rem;
   margin: 0.5rem auto;
   border: solid 1px black;
   max-width: 600px;
@@ -196,67 +229,42 @@ h1 {
   background-color: #979dac;
   width: 100%;
   box-sizing: border-box;
+  box-shadow: 0 0.25rem 0.5rem #33415c;
 }
 .form-container > * {
-  padding: 0.4rem;
+  padding: 0.2rem;
   border-radius: 0.4rem;
+  gap: 0.2rem;
+}
+.date-value-container {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 1rem;
+  align-items: center;
 }
 .header {
-  background-color: #023e7d;
+  background-color: #2c6e49;
   color: white;
   font-size: 2.2rem;
   font-weight: normal;
   border-radius: 0.4rem;
   padding: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.2rem;
 }
 .section {
+  display: flex;
+  flex-direction: column;
+  /* align-items: end; */
   color: white;
   border: 0.05rem solid #001233;
   border-radius: 0.4rem;
   padding: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.2rem;
 }
-
 .footer {
-  background-color: #0466c8;
+  background-color: #4c956c;
   border-radius: 0.4rem;
   padding: 0.5rem;
-}
-
-.item-input-group,
-.photo-input-group {
-  display: flex;
-  margin-bottom: 0.5rem;
-  margin-top: 0.5rem;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-label {
-  flex: 0 0 auto;
-  margin-right: 0.5rem;
-}
-input {
-  display: flex;
-  padding: 0.15rem;
-  border: 1px solid #002855;
-  border-radius: 0.25rem;
-  width: 100%;
-  max-width: 100;
-}
-input[type="file"] {
-  padding: 0.15rem;
-  border: 1px solid #002855;
-  border-radius: 0.25rem;
-  width: 100%;
-  max-width: 100;
-  background-color: white;
-}
-#button-links {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
 }
 .button-link {
   padding: 0.25rem 1rem;
@@ -264,5 +272,10 @@ input[type="file"] {
   border-radius: 4px;
   cursor: pointer;
   border: solid black 0.025rem;
+}
+#items {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 </style>

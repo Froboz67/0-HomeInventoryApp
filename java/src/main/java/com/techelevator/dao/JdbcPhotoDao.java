@@ -9,6 +9,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Component
@@ -46,6 +47,26 @@ public class JdbcPhotoDao implements PhotoDao {
         return photo;
     }
     @Override
+    public Photo updatePhoto(Photo photo, int itemId) {
+        Photo updatedPhoto = null;
+        photo.setUploadedAt(LocalDateTime.now());
+        final String sql = "UPDATE public.item_photos\n" +
+                "\tSET item_id=?, photo_name=?, photo_url=?, uploaded_at=?\n" +
+                "\tWHERE item_id =?";
+        try {
+            int numberOfRowsAffected = jdbcTemplate.update(sql, photo.getItemId(),
+                    photo.getName(), photo.getPhotoUrl(), photo.getUploadedAt(),photo.getItemId());
+            updatedPhoto = getPhoto(photo.getItemId());
+            if (numberOfRowsAffected == 0) {
+                throw new DaoException("zero rows affected");
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("unable to connect to database", e);
+        }
+        System.out.println("updated photo: " + updatedPhoto);
+        return updatedPhoto;
+    }
+    @Override
     public Photo getPhoto(int itemId) {
         Photo photo = null;
         final String sql = "SELECT photo_id, item_id, photo_name, photo_url, uploaded_at\n" +
@@ -58,7 +79,7 @@ public class JdbcPhotoDao implements PhotoDao {
             }
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
-        }
+         }
         System.out.println(photo);
         return photo;
     }

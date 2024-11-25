@@ -65,12 +65,13 @@ public class JdbcItemDao implements ItemDao{
 
     @Override
     public List<Item> getAllItems(int userId) {
-        final List<Item> itemsList = new ArrayList<Item>();
+        final List<Item> itemsList = new ArrayList<>();
+
         final String sql = "SELECT item_id, user_id, i_name, category, purchase_date, purchase_price, i_value, is_valuable, notes, created_at, updated_at\n" +
                 "\tFROM public.items\n" +
-                "\tWHERE user_id = ?;";
+                "\tWHERE user_id = ? ORDER by i_name ASC;";
         try {
-            // do something here
+
             final SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
             while (results.next()) {
                 itemsList.add(mapRowToItem(results));

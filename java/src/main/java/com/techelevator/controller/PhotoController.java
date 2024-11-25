@@ -1,7 +1,6 @@
 package com.techelevator.controller;
 
 
-import com.amazonaws.auth.policy.Resource;
 import com.techelevator.dao.PhotoDao;
 import com.techelevator.dao.UserDao;
 import com.techelevator.model.Photo;
@@ -52,6 +51,14 @@ public class PhotoController {
     Method takes an uploaded file from the front end and saves it to a local folder.The storage folder has to be located outside the
     application root.
      */
+    @PostMapping("/update/{itemId}")
+    public ResponseEntity<Photo> updatePhoto(@PathVariable int itemId, @RequestBody Photo photo, Principal principal) {
+        System.out.println("inside update method");
+        System.out.println(photo);
+        User user = userDao.getUserByUsername(principal.getName());
+        photoDao.updatePhoto(photo, photo.getItemId());
+        return ResponseEntity.status(HttpStatus.OK).body(photo);
+    }
     @PostMapping("/photo/upload")
     public ResponseEntity<String> uploadPhoto(@RequestParam("itemId") int itemId, @RequestParam("file")MultipartFile file) {
         String folderPath = "D:/Kevin_Docs/Engel_Docs/Tech_Elevator/workspace/GitHub/HomeInventoryApp/item-photos";
@@ -76,13 +83,13 @@ public class PhotoController {
         return photoDao.getPhoto(itemId);
     }
     @GetMapping("/photo/file/item/{itemId}")
-    public ResponseEntity<UrlResource> getPhotoFileByItmeId(@PathVariable int itemId) {
+    public ResponseEntity<UrlResource> getPhotoUrl(@PathVariable int itemId) {
         try {
             Photo photo = photoDao.getPhoto(itemId);
 
             if (photo == null || photo.getName() == null) {
                 System.out.println("photo or filename was null");
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
 
             String fileName = photo.getName();
@@ -99,6 +106,8 @@ public class PhotoController {
             }
 
             if (urlResource.exists()) {
+                System.out.println("filename is " + photo.getName());
+                System.out.println("Actual filename: " + urlResource.getFilename());
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + urlResource.getFilename() + "\"")
                         .body(urlResource);
@@ -114,6 +123,7 @@ public class PhotoController {
     @DeleteMapping("/delete/{itemId}")
     public ResponseEntity<Photo> deletePhoto(@PathVariable int itemId, Photo photo, Principal principal) {
         User user = userDao.getUserByUsername(principal.getName());
+        System.out.println("photo before deletion " + photo);
         photoDao.deletePhoto(photo, itemId);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
     }
