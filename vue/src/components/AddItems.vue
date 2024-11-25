@@ -107,6 +107,7 @@ export default {
   },
   methods: {
     handleUploadedFile(file) {
+      console.log("handleUploadedFile() Add Items");
       this.file = file;
     },
     saveItem() {
@@ -170,6 +171,7 @@ export default {
         });
     },
     uploadPhoto(itemId) {
+      console.log("upload file on initial create ", this.file);
       if (!this.file) return;
 
       const formData = new FormData();

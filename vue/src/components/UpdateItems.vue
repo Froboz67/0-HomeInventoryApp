@@ -63,6 +63,7 @@
               label="Upload Photo"
               id="item-photo"
               @file-upload="handleUploadedFile"
+              @file-changed="updateFileStatus"
               placeholder="Upload a Picture"
               ref="fileUploadComponent"
             />
@@ -121,9 +122,13 @@ export default {
         isValuable: false,
         notes: "",
       },
+      file: null,
+      photoMetadata: {},
+      photoId: null,
       photoUrl: null,
       showFileUpload: false,
       photo: null,
+      isNewPhoto: false,
     };
   },
   methods: {
@@ -131,12 +136,16 @@ export default {
       this.showFileUpload = true;
     },
     handleUploadedFile(file) {
+      console.log("handleUploadedFile() Update Items");
       this.file = file;
       // this.showFileUpload = false;
     },
     handleFileUpload(event) {
       this.file = event.target.files[0];
       console.log("here is the file: ", this.file, this.file.name);
+    },
+    updateFileStatus(isChanged) {
+      this.isNewPhoto = isChanged;
     },
     getItem() {
       const user = this.$store.state.user;
@@ -151,16 +160,22 @@ export default {
     getPhoto() {
       const itemId = this.$route.params.id;
       fileService.getPhoto(itemId).then((response) => {
-        console.log("Fetched photo data:", response.data);
-        this.photo = response.data;
-        console.log("this is the photo: ", this.photo);
-        // this.file = new File([response.data], this.photo.name);
+        console.log("getPhoto() Fetched photo data:", response.data);
+        this.photoMetadata = response.data;
+        this.photoId = response.data.photoId;
+        console.log("getPhoto() metaData:", this.photoMetadata);
+        console.log("getPhoto() photoId; ", this.photoId);
+        console.log("getPhoto() photoname; ", this.photoMetadata.name);
+
+        this.file = new File([response.data], this.photo);
+        console.log("getPhoto() the file", this.file);
       });
     },
     // need to test this method, need the photo file if there is a photo
     // present in the item object...
     getPhotoUrl() {
       const itemId = this.$route.params.id;
+      console.log("this item", itemId);
       // after implementing the isLoading visual
       // this.isLoading = true;
       fileService
@@ -169,11 +184,15 @@ export default {
           if (response.status === 204) {
             this.photoUrl = null;
             this.file = null;
-            console.log("there is no photo file", response.status);
+            this.isNewPhoto = true;
+            console.log(
+              "getPhotoUrl() there is no photo file",
+              response.status
+            );
           } else {
             const blob = new Blob([response.data], { type: "image/png" });
             this.photoUrl = URL.createObjectURL(blob);
-            console.log("there is a photo file", response.status);
+            console.log("there is a photo file", this.photoUrl);
 
             // after implementing the isLoading visual
             // this.isLoading = false;
@@ -195,36 +214,32 @@ export default {
       console.log("user id: " + user.id);
       const itemId = this.$route.params.id;
       console.log("Item id: " + itemId);
+      // const photoId = this.$route.params.id;
+      // console.log("updateItem() photoId: ", photoId);
       service
         .updateItem(user.id, itemId, this.item)
         .then((response) => {
           if (response.status === 200) {
-            alert("item updated successfully!");
-            // save the push to list until everything works
-            // this.$router.push({ name: "list" });
+            alert("item updated successfully! ");
+            console.log("photo status", this.isNewPhoto);
+            if (!this.isNewPhoto) {
+              this.$router.push({ name: "list" });
+              return;
+            }
+
             if (this.file) {
               console.log(
-                "there is a photo file with this item: ",
+                "updateItem() there is a photo file with this item: ",
                 this.file.name,
                 itemId
               );
-              // this.savePhoto(itemId);
-              // why does the program think there is a file?
               this.updatePhoto(itemId);
-              this.resetForm();
-              // push to list if applicable
               this.$router.push({ name: "list" });
             } else {
-              console.log("there is no file present with this item");
-              /*
-              order of operations for photo file saving in the event there
-              is NOT a photo file present from the user selection:
-              1 - call savePhoto() to store the metadata in database
-              2  - uploadPhoto() is called to store the actual file locally
-              */
+              console.log(
+                "updateItem() there is no file present with this item"
+              );
               this.savePhoto(itemId);
-              this.resetForm();
-              // push to list if applicable
               this.$router.push({ name: "list" });
             }
           }
@@ -241,7 +256,7 @@ export default {
         photoUrl:
           "D:/Kevin_Docs/Engel_Docs/Tech_Elevator/workspace/GitHub/HomeInventoryApp/item-photos/",
       };
-      console.log("this is the metadata ", photoMetadata);
+      console.log("savePhoto() this is the metadata ", photoMetadata);
       fileService
         .savePhoto(photoMetadata)
         .then((response) => {
@@ -257,20 +272,21 @@ export default {
         });
     },
     updatePhoto(itemId) {
-      this.getPhoto(itemId);
+      // this.getPhoto(itemId);
       const photoFileName = this.file.name;
       const photoMetadata = {
+        photoId: this.photoId,
         itemId: itemId,
         name: photoFileName,
         photoUrl:
           "D:/Kevin_Docs/Engel_Docs/Tech_Elevator/workspace/GitHub/HomeInventoryApp/item-photos/",
       };
-      console.log("this is the metadata ", photoMetadata);
+      console.log("updatePhoto() this is the metadata ", photoMetadata);
       fileService
         .updatePhoto(photoMetadata, itemId)
         .then((response) => {
           if (response.status === 200) {
-            alert("photo updated successfully");
+            alert("updatePhoto() photo updated successfully");
             this.uploadPhoto(itemId);
           }
         })
@@ -280,7 +296,7 @@ export default {
         });
     },
     uploadPhoto(itemId) {
-      console.log(this.file);
+      console.log("upload file on update method", this.file);
       if (!this.file) return;
 
       const formData = new FormData();

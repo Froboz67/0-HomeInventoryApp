@@ -1,7 +1,6 @@
 package com.techelevator.controller;
 
 
-import com.amazonaws.auth.policy.Resource;
 import com.techelevator.dao.PhotoDao;
 import com.techelevator.dao.UserDao;
 import com.techelevator.model.Photo;
@@ -81,7 +80,7 @@ public class PhotoController {
         return photoDao.getPhoto(itemId);
     }
     @GetMapping("/photo/file/item/{itemId}")
-    public ResponseEntity<UrlResource> getPhotoFileByItmeId(@PathVariable int itemId) {
+    public ResponseEntity<UrlResource> getPhotoUrl(@PathVariable int itemId) {
         try {
             Photo photo = photoDao.getPhoto(itemId);
 
@@ -105,6 +104,7 @@ public class PhotoController {
 
             if (urlResource.exists()) {
                 System.out.println("filename is " + photo.getName());
+                System.out.println("Actual filename: " + urlResource.getFilename());
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + urlResource.getFilename() + "\"")
                         .body(urlResource);

@@ -25,10 +25,12 @@ export default {
   },
   methods: {
     handleFileUpload(event) {
+      console.log("handlefileUpload() fileUpload Component");
       const file = event.target.files[0];
       if (file) {
         this.$emit("file-upload", file);
-        // this.$emit("file-selected");
+        console.log("handleFileUpload() fileUpComponent", file);
+        this.$emit("file-changed", true);
       }
     },
   },
