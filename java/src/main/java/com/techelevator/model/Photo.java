@@ -10,6 +10,7 @@ public class Photo {
     private String photoUrl;
     private LocalDateTime uploadedAt;
 
+
     public Photo() {
 
     }
