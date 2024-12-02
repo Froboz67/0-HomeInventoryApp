@@ -10,9 +10,9 @@ Java, Spring Boot, PostgreSQL
 
 Vue.js, HTML5, CSS, Bootstrap
 
-<img src="readme-image.png" alt="sample image" width="400">
+## Sample Screenshot
 
-![Project Logo or Screenshot](readme-image.png) 
+<img src="readme-image.png" alt="sample image" width="400">
 
 ## Key Features
 
