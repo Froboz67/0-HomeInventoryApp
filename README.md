@@ -12,7 +12,7 @@ Vue.js, HTML5, CSS, Bootstrap
 
 ## Sample Screenshot
 
-<img src="readme-image.png" alt="sample image" style="width: 60%; justify-content: center">
+<img src="readme-image.png" alt="sample image" style="width: 60%; justify-items: center">
 
 ## Key Features
 
