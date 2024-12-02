@@ -11,7 +11,7 @@ Java, Spring Boot, PostgreSQL
 Vue.js, HTML5, CSS, Bootstrap
 
 ## Sample Screenshot
-<div style="display: grid; justify-items: center;">
+<div "display: flex; justify-content: center; align-items: center;">
 <img src="readme-image.png" alt="sample image" style="width: 60%;">
 </div>
 
