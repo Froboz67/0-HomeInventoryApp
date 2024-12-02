@@ -12,7 +12,7 @@ Vue.js, HTML5, CSS, Bootstrap
 
 ## Sample Screenshot
 <div style="display: flex; justify-content: center; align-items: center; width: 100%">
-<img src="readme-image.png" alt="sample image" style="width: 60%;">
+<img src="readme-image.png" alt="sample image" style="width: 60%; display: block;">
 </div>
 
 ## Key Features
