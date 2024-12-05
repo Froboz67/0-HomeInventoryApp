@@ -17,7 +17,7 @@ export default {
         return axios.get(`/photo/${itemId}`);
     },
     deletePhoto(file, itemId) {
-        return axios.delete(`/delete/${itemId}`, file)
+        return axios.delete(`/delete-photo/${itemId}`, file)
     },
     getPhotoUrl(itemId) {
         return axios.get(`/photo/file/item/${itemId}`, { responseType: "blob" });

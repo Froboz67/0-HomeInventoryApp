@@ -47,12 +47,9 @@ public class PhotoController {
         photoDao.savePhoto(photo, user.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(photo);
     }
-    /*
-    Method takes an uploaded file from the front end and saves it to a local folder.The storage folder has to be located outside the
-    application root.
-     */
-    @PostMapping("/update/{itemId}")
-    public ResponseEntity<Photo> updatePhoto(@PathVariable int itemId, @RequestBody Photo photo, Principal principal) {
+
+    @PostMapping("/update")
+    public ResponseEntity<Photo> updatePhoto(@RequestBody Photo photo, Principal principal) {
         System.out.println("inside update method");
         System.out.println(photo);
         User user = userDao.getUserByUsername(principal.getName());
@@ -120,7 +117,7 @@ public class PhotoController {
         }
     }
 
-    @DeleteMapping("/delete/{itemId}")
+    @DeleteMapping("/delete-photo/{itemId}")
     public ResponseEntity<Photo> deletePhoto(@PathVariable int itemId, Photo photo, Principal principal) {
         User user = userDao.getUserByUsername(principal.getName());
         System.out.println("photo before deletion " + photo);

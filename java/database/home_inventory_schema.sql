@@ -1,6 +1,6 @@
 BEGIN TRANSACTION;
 
-DROP TABLE IF EXISTS users, item_rooms, item_documents, item_photos, items, rooms CASCADE;
+DROP TABLE IF EXISTS users, item_rooms, item_documents, item_photos, items, rooms, item_category CASCADE;
 
 
 CREATE TABLE users (
@@ -60,5 +60,30 @@ CREATE TABLE item_rooms (
     CONSTRAINT FK_item_id FOREIGN KEY (item_id) REFERENCES items(item_id),
     CONSTRAINT FK_room_id FOREIGN KEY (room_id) REFERENCES rooms(room_id)
 );
+CREATE TABLE item_category (
+    category_id SERIAL PRIMARY KEY,
+    category_name VARCHAR(50) NOT NULL UNIQUE,
+    is_default BOOLEAN NOT NULL,
+    created_by_user_id INTEGER REFERENCES users(user_id)
+);
+
 
 COMMIT TRANSACTION;
+
+
+-- things that were added after original schema was written
+--
+--ALTER TABLE items
+--ADD COLUMN category_id INTEGER;
+
+
+-- keeps the names in the two tables constant
+--UPDATE items
+--SET category_id = ic.category_id
+--FROM item_category ic
+--WHERE items.category = ic.category_name;
+
+--set foreign key constraint for items table
+--ALTER TABLE items
+--ADD CONSTRAINT fk_item_category
+--FOREIGN KEY (category_id) REFERENCES item_category(category_id);

@@ -154,7 +154,7 @@ export default {
       console.log("user id: " + user.id);
       const itemId = this.$route.params.id;
       console.log("Item id: " + itemId);
-      service.getItem(user.id, itemId).then((response) => {
+      service.getItem(itemId).then((response) => {
         this.item = response.data;
         console.log(this.item);
       });
@@ -219,7 +219,7 @@ export default {
       // const photoId = this.$route.params.id;
       // console.log("updateItem() photoId: ", photoId);
       service
-        .updateItem(user.id, itemId, this.item)
+        .updateItem(itemId, this.item)
         .then((response) => {
           if (response.status === 200) {
             alert("item updated successfully! ");
@@ -328,7 +328,7 @@ export default {
         console.log("photo is: ", photo);
 
         service
-          .deleteItem(user.id, itemId, this.item)
+          .deleteItem(itemId, this.item)
           .then((response) => {
             if (response.status === 204) {
               alert("item deleted from inventory");

@@ -5,18 +5,18 @@ export default {
     saveItem(item) {
         return axios.post("/item", item);
     },
-    getItems(id) {
-        console.log(id);
-        return axios.get(`/list-items/${id}`);
+    getItems() {
+        console.log("testing");
+        return axios.get(`/list-items`);
     },
-    getItem(id, itemId) {
-        return axios.get(`/itemdetails/${id}/${itemId}`);
+    getItem(itemId) {
+        return axios.get(`/itemdetails/${itemId}`);
     },
-    updateItem(id, itemId, item) {
-        return axios.post(`/update/${id}/${itemId}`, item);
+    updateItem(itemId, item) {
+        return axios.post(`/update/${itemId}`, item);
     },
-    deleteItem(id, itemId, item) {
-        return axios.delete(`/delete/${id}/${itemId}`, item);
+    deleteItem(itemId, item) {
+        return axios.delete(`/delete/${itemId}`, item);
     }
 
 }

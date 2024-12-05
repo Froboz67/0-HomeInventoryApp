@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -41,18 +42,31 @@ public class ItemController {
 
     @PostMapping("/item")
     public ResponseEntity<Item> saveItem(@RequestBody Item item, Principal principal) {
+
+//        int userId = item.getUserId();
+//        System.out.println("userId = " + userId);
+//        System.out.println("userDao userId = " + userDao.getUserById(item.getUserId()));
+//        String username = principal.getName();
+//        User user = userDao.getUserByUsername(username);
+//        if (userId != user.getId()) {
+//            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+//        }
+
         User user = userDao.getUserByUsername(principal.getName());
+        int id = user.getId();
+        System.out.println("the user id is + " + id);
         itemDao.saveItem(item, user.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(item);
     }
-    @PostMapping("/update/{itemId}/{userId}")
-    public ResponseEntity<Item> updateItem(@PathVariable int itemId, @PathVariable int userId, @RequestBody Item item, Principal principal) {
+    @PostMapping("/update/{itemId}")
+    public ResponseEntity<Item> updateItem(@PathVariable int itemId, @RequestBody Item item, Principal principal) {
         User user = userDao.getUserByUsername(principal.getName());
-        itemDao.updateItem(item, userId);
+        itemDao.updateItem(item, user.getId());
+        System.out.println(user.getId());
         return ResponseEntity.status(HttpStatus.OK).body(item);
     }
-    @DeleteMapping("/delete/{userId}/{itemId}")
-    public ResponseEntity<Item> deleteItem(@PathVariable int itemId, @PathVariable int userId, Item item, Principal principal) {
+    @DeleteMapping("/delete/{itemId}")
+    public ResponseEntity<Item> deleteItem(@PathVariable int itemId, Item item, Principal principal) {
 
 
         // Logger supplied by spring boot SLF4j...
@@ -77,18 +91,21 @@ public class ItemController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
         }
-        itemDao.deleteItem(item, userId);
+        itemDao.deleteItem(item, user.getId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 
-    @GetMapping("/list-items/{userId}")
-    public ItemResponseDTO getItemsList(@PathVariable int userId, Principal principal) {
-        User user = userDao.getUserByUsername(principal.getName());
-        final List<Item> itemList = this.itemDao.getAllItems(userId);
+    @GetMapping("/list-items")
+    public ItemResponseDTO getItemsList(Principal principal) {
+
+        String currentUser = principal.getName();
+        User user = userDao.getUserByUsername(currentUser);
+
+        final List<Item> itemList = this.itemDao.getAllItems(user.getId());
         return new ItemResponseDTO(itemList);
     }
-    @GetMapping("/itemdetails/{userId}/{itemId}")
-    public Item getItem(@PathVariable int userId, @PathVariable int itemId, Principal principal) {
+    @GetMapping("/itemdetails/{itemId}")
+    public Item getItem(@PathVariable int itemId, Principal principal) {
         User user = userDao.getUserByUsername(principal.getName());
         return itemDao.getItem(itemId, user.getId());
     }
