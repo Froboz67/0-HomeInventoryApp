@@ -87,10 +87,10 @@ public class JdbcItemDao implements ItemDao{
         Item updatedItem = null;
         item.setUpdatedAt(LocalDateTime.now());
         final String sql = "UPDATE public.items\n" +
-                "\tSET user_id=?, i_name=?, category=?, purchase_date=?, purchase_price=?, i_value=?, is_valuable=?, notes=?, created_at=?, updated_at=?\n" +
+                "\tSET i_name=?, category=?, purchase_date=?, purchase_price=?, i_value=?, is_valuable=?, notes=?, created_at=?, updated_at=?\n" +
                 "\tWHERE item_id=?";
         try {
-            int numberOfRowsAffected = jdbcTemplate.update(sql, item.getUserId(), item.getName(), item.getCategory(), item.getPurchaseDate(),
+            int numberOfRowsAffected = jdbcTemplate.update(sql, item.getName(), item.getCategory(), item.getPurchaseDate(),
                     item.getPurchasePrice(), item.getValue(), item.getValuable(), item.getNotes(), item.getCreatedAt(), item.getUpdatedAt(), item.getItemId());
             updatedItem = getItem(item.getItemId(), item.getUserId());
             if (numberOfRowsAffected == 0) {

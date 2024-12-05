@@ -91,7 +91,7 @@ export default {
       const itemId = this.$route.params.id;
       this.isLoading = true;
       service
-        .getItem(user.id, itemId)
+        .getItem(itemId)
         .then((response) => {
           this.item = response.data;
           this.isLoading = false;
