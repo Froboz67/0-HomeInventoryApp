@@ -47,16 +47,16 @@ public class JdbcPhotoDao implements PhotoDao {
         return photo;
     }
     @Override
-    public Photo updatePhoto(Photo photo, int itemId) {
+    public Photo updatePhoto(Photo photo, int photoId) {
         Photo updatedPhoto = null;
         photo.setUploadedAt(LocalDateTime.now());
         final String sql = "UPDATE public.item_photos\n" +
                 "\tSET item_id=?, photo_name=?, photo_url=?, uploaded_at=?\n" +
-                "\tWHERE item_id =?";
+                "\tWHERE photo_id =?";
         try {
             int numberOfRowsAffected = jdbcTemplate.update(sql, photo.getItemId(),
-                    photo.getName(), photo.getPhotoUrl(), photo.getUploadedAt(),photo.getItemId());
-            updatedPhoto = getPhoto(photo.getItemId());
+                    photo.getName(), photo.getPhotoUrl(), photo.getUploadedAt(), photo.getPhotoId());
+            updatedPhoto = getPhoto(photo.getPhotoId());
             if (numberOfRowsAffected == 0) {
                 throw new DaoException("zero rows affected");
             }
@@ -98,7 +98,9 @@ public class JdbcPhotoDao implements PhotoDao {
     Photo mapRowToPhoto(SqlRowSet rowSet) {
         Photo photo = new Photo();
         photo.setPhotoId(rowSet.getInt("photo_id"));
+        System.out.println("photo ID " + photo.getPhotoId());
         photo.setItemId(rowSet.getInt("item_id"));
+
         photo.setName(rowSet.getString("photo_name"));
         photo.setPhotoUrl(rowSet.getString("photo_url"));
         java.sql.Date uploadedAt = rowSet.getDate("uploaded_at");

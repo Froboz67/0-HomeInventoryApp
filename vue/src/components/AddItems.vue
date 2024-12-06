@@ -127,9 +127,12 @@ export default {
 
             // checking for the existence of a photo file
             if (this.file) {
+              // call the uploadPhoto first if there is a file present in the UI
+              this.uploadPhoto(itemId);
               // calls the savePhoto method in the event the is
               // a file in the UI
-              this.savePhoto(itemId);
+              // original code below saved photo metadata first
+              // this.savePhoto(itemId);
             } else {
               this.resetForm();
               // push to list if applicable
@@ -160,9 +163,12 @@ export default {
         .then((response) => {
           if (response.status === 201) {
             alert("photo metadata saved to db");
+            this.resetForm();
+            this.$router.push({ name: "list" });
+            // originally the code saved meta data first the code is below
             // after metadata has been successfully saved the photo is uploaded
             // to local storage
-            this.uploadPhoto(itemId);
+            // this.uploadPhoto(itemId);
           }
         })
         .catch((error) => {
@@ -177,14 +183,17 @@ export default {
       const formData = new FormData();
       formData.append("file", this.file);
       formData.append("itemId", itemId);
+      console.log("this is the form data ", formData);
 
       fileService
         .uploadPhoto(formData)
         .then((response) => {
           if (response.status === 201) {
-            alert("photo saved!");
-            this.resetForm();
-            this.$router.push({ name: "list" });
+            alert("photo uploaded successfully!");
+            this.savePhoto(itemId);
+            // originally the upload method happened second. it needs to happen first for data integrity
+            // this.resetForm();
+            // this.$router.push({ name: "list" });
           }
         })
         .catch((error) => {

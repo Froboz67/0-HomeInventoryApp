@@ -22,9 +22,9 @@ export default {
     getPhotoUrl(itemId) {
         return axios.get(`/photo/file/item/${itemId}`, { responseType: "blob" });
     },
-    updatePhoto(file, itemId, photo) {
+    updatePhoto(file, photoId, itemId, fileName) {
         console.log("this is the itemID ", itemId)
-        return axios.post(`/update/${itemId}`, file, itemId, photo);
+        return axios.post(`/update-photo/${photoId}`, file, photoId, itemId, fileName);
     }
 
 }
