@@ -130,6 +130,7 @@ export default {
       photo: null,
       isNewPhoto: false,
       isUpdatedPhoto: false,
+      idLoading: false,
     };
   },
   methods: {
@@ -140,6 +141,7 @@ export default {
     handleUploadedFile(file) {
       console.log("handleUploadedFile() Update Items");
       this.file = file;
+      console.log("and this is the file: ", this.file);
       // this.showFileUpload = false;
     },
     handleFileUpload(event) {
@@ -156,7 +158,7 @@ export default {
       console.log("Item id: " + itemId);
       service.getItem(itemId).then((response) => {
         this.item = response.data;
-        console.log(this.item);
+        console.log("the item on created ", this.item);
       });
     },
     getPhoto() {
@@ -169,7 +171,8 @@ export default {
         console.log("getPhoto() photoId; ", this.photoId);
         console.log("getPhoto() photoname; ", this.photoMetadata.name);
 
-        this.file = new File([response.data], this.photo);
+        this.file = new File([response.data], this.photoMetadata.name);
+        console.log("this is the this.photo: ", this.photoMetadata.name);
         console.log("getPhoto() the file", this.file);
       });
     },
@@ -214,8 +217,9 @@ export default {
       }
       const user = this.$store.state.user;
       console.log("user id: " + user.id);
-      const itemId = this.$route.params.id;
+      const itemId = Number(this.$route.params.id);
       console.log("Item id: " + itemId);
+      console.log("item before the service call ", this.item);
       // const photoId = this.$route.params.id;
       // console.log("updateItem() photoId: ", photoId);
       service
@@ -235,12 +239,15 @@ export default {
                 this.file.name,
                 itemId
               );
+              console.log("line 241", itemId);
+              this.uploadPhoto(itemId);
+              console.log("this is after the upload value ", itemId);
               this.updatePhoto(itemId);
-              this.$router.push({ name: "list" });
             } else {
               console.log(
                 "updateItem() there is no file present with this item"
               );
+              console.log("ahead of the savePhoto call");
               this.savePhoto(itemId);
               this.$router.push({ name: "list" });
             }
@@ -273,8 +280,12 @@ export default {
           alert("there was a problem saving the photo");
         });
     },
+    //this method doesn'twork
     updatePhoto(itemId) {
-      // this.getPhoto(itemId);
+      // this.getItem(itemId);
+      itemId = Number(itemId);
+      console.log("THE IIIIIDDDDD ", typeof itemId, itemId);
+      console.log("inside update method", this.file, itemId);
       const photoFileName = this.file.name;
       const photoMetadata = {
         photoId: this.photoId,
@@ -288,8 +299,8 @@ export default {
         .updatePhoto(photoMetadata, itemId)
         .then((response) => {
           if (response.status === 200) {
-            alert("updatePhoto() photo updated successfully");
-            this.uploadPhoto(itemId);
+            alert("photo metadata saved to db");
+            // this.uploadPhoto(itemId);
           }
         })
         .catch((error) => {
@@ -297,25 +308,33 @@ export default {
           alert("there was a problem updating the photo");
         });
     },
+    // this method works
     uploadPhoto(itemId) {
-      console.log("upload file on update method", this.file);
+      console.log("upload file on update method", this.file, itemId);
       if (!this.file) return;
+
+      this.isLoading = true;
 
       const formData = new FormData();
       formData.append("file", this.file);
       formData.append("itemId", itemId);
+      console.log("this is the form data ", formData);
 
       fileService
         .uploadPhoto(formData)
         .then((response) => {
           if (response.status === 201) {
-            alert("photo saved!");
-            this.resetForm();
+            console.log(response.status);
+            alert("photo uploaded successfully!");
+            // this.updatePhoto(itemId);
           }
         })
         .catch((error) => {
           console.log(error);
           alert("file upload failed.");
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
     },
     deleteItem() {

@@ -48,8 +48,8 @@ public class PhotoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(photo);
     }
 
-    @PostMapping("/update")
-    public ResponseEntity<Photo> updatePhoto(@RequestBody Photo photo, Principal principal) {
+    @PostMapping("/update-photo/{itemId}")
+    public ResponseEntity<Photo> updatePhoto(@PathVariable int itemId, @RequestBody Photo photo, Principal principal) {
         System.out.println("inside update method");
         System.out.println(photo);
         User user = userDao.getUserByUsername(principal.getName());

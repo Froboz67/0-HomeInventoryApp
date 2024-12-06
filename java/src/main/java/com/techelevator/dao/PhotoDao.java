@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public interface PhotoDao {
-    Photo savePhoto(Photo photo, int userId);
+    Photo savePhoto(Photo photo, int itemId);
 
     Photo updatePhoto(Photo photo, int itemId);
 
