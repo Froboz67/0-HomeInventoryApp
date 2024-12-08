@@ -19,4 +19,5 @@ public interface ItemDao {
     Item deleteItem(Item item, int userId);
 
 
+    Item getItem(int itemId);
 }

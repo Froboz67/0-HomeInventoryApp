@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -106,7 +105,23 @@ public class ItemController {
     }
     @GetMapping("/itemdetails/{itemId}")
     public Item getItem(@PathVariable int itemId, Principal principal) {
-        User user = userDao.getUserByUsername(principal.getName());
+
+
+        String currentUser = principal.getName();
+        System.out.println("inside getItem:  " + currentUser);
+        User user = userDao.getUserByUsername(currentUser);
+        int userId = user.getId();
+        /*
+        I had to create an overloaded method in order to get the item with only the
+        itemId. Then I get the item Id from the current this.item instance and
+        compare the userId of the current instance to be certain the authenticated
+        user is authorized to view the current item
+         */
+        Item item = itemDao.getItem(itemId);
+
+        if (item.getUserId() != userId) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
         return itemDao.getItem(itemId, user.getId());
     }
 }
