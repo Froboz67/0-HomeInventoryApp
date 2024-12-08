@@ -78,6 +78,11 @@
              after the button is clicked -->
           </div>
         </section>
+
+        <div v-if="isLoading" class="create-class">
+          <span>Uploading...</span>
+        </div>
+
         <footer class="footer">
           <button class="button-link" type="submit">Save Updated Item</button>
           <button type="button" class="button-link" v-on:click="deleteItem">
@@ -130,7 +135,7 @@ export default {
       photo: null,
       isNewPhoto: false,
       isUpdatedPhoto: false,
-      idLoading: false,
+      isLoading: false,
     };
   },
   methods: {
@@ -139,48 +144,31 @@ export default {
       this.isUpdatedPhoto = true;
     },
     handleUploadedFile(file) {
-      console.log("handleUploadedFile() Update Items");
       this.file = file;
-      console.log("and this is the file: ", this.file);
-      // this.showFileUpload = false;
     },
     handleFileUpload(event) {
       this.file = event.target.files[0];
-      console.log("here is the file: ", this.file, this.file.name);
     },
     updateFileStatus(isChanged) {
       this.isNewPhoto = isChanged;
     },
     getItem() {
       const user = this.$store.state.user;
-      console.log("user id: " + user.id);
       const itemId = this.$route.params.id;
-      console.log("Item id: " + itemId);
       service.getItem(itemId).then((response) => {
         this.item = response.data;
-        console.log("the item on created ", this.item);
       });
     },
     getPhoto() {
       const itemId = this.$route.params.id;
       fileService.getPhoto(itemId).then((response) => {
-        console.log("getPhoto() Fetched photo data:", response.data);
         this.photoMetadata = response.data;
         this.photoId = response.data.photoId;
-        console.log("getPhoto() metaData:", this.photoMetadata);
-        console.log("getPhoto() photoId; ", this.photoId);
-        console.log("getPhoto() photoname; ", this.photoMetadata.name);
-
         this.file = new File([response.data], this.photoMetadata.name);
-        console.log("this is the this.photo: ", this.photoMetadata.name);
-        console.log("getPhoto() the file", this.file);
       });
     },
-    // need to test this method, need the photo file if there is a photo
-    // present in the item object...
     getPhotoUrl() {
       const itemId = this.$route.params.id;
-      console.log("this item", itemId);
       // after implementing the isLoading visual
       // this.isLoading = true;
       fileService
@@ -190,17 +178,9 @@ export default {
             this.photoUrl = null;
             this.file = null;
             this.isNewPhoto = true;
-            console.log(
-              "getPhotoUrl() there is no photo file",
-              response.status
-            );
           } else {
             const blob = new Blob([response.data], { type: "image/png" });
             this.photoUrl = URL.createObjectURL(blob);
-            console.log("there is a photo file", this.photoUrl);
-
-            // after implementing the isLoading visual
-            // this.isLoading = false;
           }
         })
         .catch((error) => {
@@ -209,54 +189,45 @@ export default {
           // this.isLoading = false;
         });
     },
-    updateItem() {
+    async updateItem() {
       if (this.item.purchaseDate) {
         this.item.purchaseDate = new Date(this.item.purchaseDate)
           .toISOString()
           .split("T")[0];
       }
       const user = this.$store.state.user;
-      console.log("user id: " + user.id);
       const itemId = Number(this.$route.params.id);
-      console.log("Item id: " + itemId);
-      console.log("item before the service call ", this.item);
-      // const photoId = this.$route.params.id;
-      // console.log("updateItem() photoId: ", photoId);
-      service
-        .updateItem(itemId, this.item)
-        .then((response) => {
-          if (response.status === 200) {
-            alert("item updated successfully! ");
-            console.log("photo status", this.isNewPhoto);
-            if (!this.isNewPhoto) {
-              this.$router.push({ name: "list" });
-              return;
-            }
 
-            if (this.file && this.isUpdatedPhoto) {
-              console.log(
-                "updateItem() there is a photo file with this item: ",
-                this.file.name,
-                itemId
-              );
-              console.log("line 241", itemId);
-              this.uploadPhoto(itemId);
-              console.log("this is after the upload value ", itemId);
-              this.updatePhoto(itemId);
-            } else {
-              console.log(
-                "updateItem() there is no file present with this item"
-              );
-              console.log("ahead of the savePhoto call");
-              this.savePhoto(itemId);
-              this.$router.push({ name: "list" });
-            }
+      try {
+        // Await the response of updateItem service call
+        const response = await service.updateItem(itemId, this.item);
+        if (response.status === 200) {
+          alert("item updated successfully! ");
+
+          if (!this.isNewPhoto) {
+            this.$router.push({ name: "list" });
+            return;
           }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+
+          if (this.file && this.isUpdatedPhoto) {
+            // Wait for the photo upload to complete before proceeding
+            await this.uploadPhoto(itemId);
+
+            // After upload completes, update the photo metadata
+            this.updatePhoto(itemId);
+            this.$router.push({ name: "list" });
+          } else {
+            // Save photo metadata and move to the list page after that
+            await this.uploadPhoto(itemId);
+            this.savePhoto(itemId);
+            this.$router.push({ name: "list" });
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
+
     savePhoto(itemId) {
       const photoFileName = this.file.name;
       const photoMetadata = {
@@ -265,14 +236,11 @@ export default {
         photoUrl:
           "D:/Kevin_Docs/Engel_Docs/Tech_Elevator/workspace/GitHub/HomeInventoryApp/item-photos/",
       };
-      console.log("savePhoto() this is the metadata ", photoMetadata);
       fileService
         .savePhoto(photoMetadata)
         .then((response) => {
-          console.log(response);
           if (response.status === 201) {
             alert("photo metadata saved to db");
-            this.uploadPhoto(itemId);
           }
         })
         .catch((error) => {
@@ -280,12 +248,9 @@ export default {
           alert("there was a problem saving the photo");
         });
     },
-    //this method doesn'twork
+
     updatePhoto(itemId) {
-      // this.getItem(itemId);
       itemId = Number(itemId);
-      console.log("THE IIIIIDDDDD ", typeof itemId, itemId);
-      console.log("inside update method", this.file, itemId);
       const photoFileName = this.file.name;
       const photoMetadata = {
         photoId: this.photoId,
@@ -294,13 +259,11 @@ export default {
         photoUrl:
           "D:/Kevin_Docs/Engel_Docs/Tech_Elevator/workspace/GitHub/HomeInventoryApp/item-photos/",
       };
-      console.log("updatePhoto() this is the metadata ", photoMetadata);
       fileService
         .updatePhoto(photoMetadata, itemId)
         .then((response) => {
           if (response.status === 200) {
             alert("photo metadata saved to db");
-            // this.uploadPhoto(itemId);
           }
         })
         .catch((error) => {
@@ -309,8 +272,7 @@ export default {
         });
     },
     // this method works
-    uploadPhoto(itemId) {
-      console.log("upload file on update method", this.file, itemId);
+    async uploadPhoto(itemId) {
       if (!this.file) return;
 
       this.isLoading = true;
@@ -318,33 +280,27 @@ export default {
       const formData = new FormData();
       formData.append("file", this.file);
       formData.append("itemId", itemId);
-      console.log("this is the form data ", formData);
 
-      fileService
-        .uploadPhoto(formData)
-        .then((response) => {
-          if (response.status === 201) {
-            console.log(response.status);
-            alert("photo uploaded successfully!");
-            // this.updatePhoto(itemId);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
+      try {
+        const response = await fileService.uploadPhoto(formData);
+
+        if (response.status === 201) {
+          alert("photo uploaded successfully!");
+        } else {
           alert("file upload failed.");
-        })
-        .finally(() => {
-          this.isLoading = false;
-        });
+        }
+      } catch (error) {
+        console.log(error);
+        alert("File upload failed.");
+      } finally {
+        this.isLoading = false;
+      }
     },
     deleteItem() {
       if (confirm("This will permanently delete this item: are you sure?")) {
         const user = this.$store.state.user;
-        console.log("user id: " + user.id);
         const itemId = this.$route.params.id;
-        console.log("Item id: " + itemId);
         const photo = this.$store.state.photo;
-        console.log("photo is: ", photo);
 
         service
           .deleteItem(itemId, this.item)
@@ -386,7 +342,6 @@ export default {
     this.getItem();
     this.getPhoto();
     this.getPhotoUrl();
-    console.log("this is the photoUrl ", this.photoUrl);
   },
 };
 </script>

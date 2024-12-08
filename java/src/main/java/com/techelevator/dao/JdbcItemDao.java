@@ -47,6 +47,22 @@ public class JdbcItemDao implements ItemDao{
         return item;
     }
     @Override
+    public Item getItem(int itemId) {
+        Item item = null;
+        final String sql = "SELECT item_id, user_id, i_name, category, purchase_date, purchase_price, i_value, is_valuable, notes, created_at, updated_at\n" +
+                "\tFROM public.items\n" +
+                "\tWHERE item_id = ?";
+        try {
+            final SqlRowSet results = jdbcTemplate.queryForRowSet(sql, itemId);
+            if (results.next()) {
+                item = mapRowToItem(results);
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        }
+        return item;
+    }
+    @Override
     public Item getItem(int itemId, int userId) {
         Item item = null;
         final String sql = "SELECT item_id, user_id, i_name, category, purchase_date, purchase_price, i_value, is_valuable, notes, created_at, updated_at\n" +
