@@ -1,25 +1,35 @@
 package com.techelevator.dao;
 
 import com.techelevator.exception.DaoException;
-import com.techelevator.model.ItemCategory;
+import com.techelevator.model.Category;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JdbcItemCategoryDao implements ItemCategoryDao{
+@Component
+public class JdbcCategoryDao implements CategoryDao {
 
     JdbcTemplate jdbcTemplate;
 
+    public JdbcCategoryDao(DataSource dataSource){
+        jdbcTemplate = new JdbcTemplate(dataSource);
+    }
+
     @Override
-    public List<ItemCategory> getCategories(int userId) {
-        final List<ItemCategory> categories = new ArrayList<>();
+    public List<Category> getCategories(int userId) {
+        final List<Category> categories = new ArrayList<>();
 
         final String sql = "SELECT category_id, category_name, is_default, created_by_user_id\n" +
-                "\tFROM public.item_category\n" +
-                "\tWHERE created_by_user_id = ?";
+                "FROM item_category\n" +
+                "WHERE is_default = true\n" +
+                "   OR created_by_user_id = (\n" +
+                "   SELECT user_id FROM users WHERE user_id = ?\n" +
+                "   )";
 
         try {
 
@@ -33,8 +43,8 @@ public class JdbcItemCategoryDao implements ItemCategoryDao{
         return categories;
     }
 
-    ItemCategory mapRowToItemCategory(SqlRowSet rowSet) {
-        ItemCategory category = new ItemCategory();
+    Category mapRowToItemCategory(SqlRowSet rowSet) {
+        Category category = new Category();
         category.setCategoryId(rowSet.getInt("category_id"));
         category.setCategoryName(rowSet.getString("category_name"));
         category.setDefault(rowSet.getBoolean("is_default"));

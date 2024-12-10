@@ -13,13 +13,26 @@
             placeholder="Name"
             required
           />
-          <text-field
+          <!-- <text-field
             label="Category:"
             id="item-category"
             v-model="item.category"
             itemid="item-category"
             placeholder="Category"
-          />
+          /> -->
+          <div class="form-group">
+            <label for="item-category">Category:</label>
+            <select id="item-category" v-model="item.category" required>
+              <option disabled value="">Select an Category</option>
+              <option
+                v-for="category in categories"
+                :key="category.categoryName"
+                value=""
+              >
+                {{ category.categoryName }}
+              </option>
+            </select>
+          </div>
           <div class="date-value-container">
             <date-field
               label="Purchase Date:"
@@ -80,6 +93,7 @@ import NumberField from "./componentModules/NumberField.vue";
 import FileUpload from "./componentModules/FileUpload.vue";
 import DateField from "./componentModules/DateField.vue";
 import CheckboxField from "./componentModules/CheckboxField.vue";
+import categoryService from "../services/CategoryService.js";
 
 export default {
   components: {
@@ -103,9 +117,17 @@ export default {
         notes: "",
       },
       file: null,
+      categories: [],
     };
   },
   methods: {
+    getCategories() {
+      const user = this.$store.state.user;
+      categoryService.getCategories(user.id).then((response) => {
+        this.categories = response.data.categories;
+        console.log(this.categories);
+      });
+    },
     handleUploadedFile(file) {
       console.log("handleUploadedFile() Add Items");
       this.file = file;
@@ -219,6 +241,7 @@ export default {
   },
   created() {
     this.$store.commit("SET_PAGE_TITLE", "Add Items");
+    this.getCategories();
   },
 };
 </script>
