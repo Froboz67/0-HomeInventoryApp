@@ -13,26 +13,19 @@
             placeholder="Name"
             required
           />
-          <!-- <text-field
-            label="Category:"
-            id="item-category"
-            v-model="item.category"
-            itemid="item-category"
-            placeholder="Category"
-          /> -->
-          <div class="form-group">
-            <label for="item-category">Category:</label>
-            <select id="item-category" v-model="item.category" required>
-              <option disabled value="">Select an Category</option>
-              <option
-                v-for="category in categories"
-                :key="category.categoryName"
-                value=""
-              >
-                {{ category.categoryName }}
-              </option>
-            </select>
+          <div class="category-container">
+            <category-dropdown
+              label="Category"
+              id="item-category"
+              v-model="item.categoryId"
+              :options="categories"
+              optionKey="categoryId"
+              optionValue="categoryId"
+              optionLabel="categoryName"
+              required
+            />
           </div>
+
           <div class="date-value-container">
             <date-field
               label="Purchase Date:"
@@ -94,6 +87,7 @@ import FileUpload from "./componentModules/FileUpload.vue";
 import DateField from "./componentModules/DateField.vue";
 import CheckboxField from "./componentModules/CheckboxField.vue";
 import categoryService from "../services/CategoryService.js";
+import CategoryDropdown from "./componentModules/CategoryDropdown.vue";
 
 export default {
   components: {
@@ -103,6 +97,7 @@ export default {
     FileUpload,
     DateField,
     CheckboxField,
+    CategoryDropdown,
   },
   data() {
     FileUpload;
@@ -115,6 +110,7 @@ export default {
         value: null,
         isValuable: false,
         notes: "",
+        categoryId: null,
       },
       file: null,
       categories: [],
@@ -138,6 +134,7 @@ export default {
           .toISOString()
           .split("T")[0];
       }
+
       service
         .saveItem(this.item)
         .then((response) => {

@@ -16,13 +16,25 @@
             placeholder="Name"
             required
           />
-          <text-field
+          <!-- <text-field
             label="Category:"
             id="item-category"
             v-model="item.category"
             itemid="item-category"
             placeholder="Category"
-          />
+          /> -->
+          <div class="category-container">
+            <category-dropdown
+              label="Category"
+              id="item-category"
+              v-model="item.categoryId"
+              :options="categories"
+              optionKey="categoryId"
+              optionValue="categoryId"
+              optionLabel="categoryName"
+              required
+            />
+          </div>
           <div class="date-value-container">
             <date-field
               label="Purchase Date:"
@@ -106,6 +118,8 @@ import DateField from "./componentModules/DateField.vue";
 import CheckboxField from "./componentModules/CheckboxField.vue";
 import NumberField from "./componentModules/NumberField.vue";
 import FileUpload from "./componentModules/FileUpload.vue";
+import CategoryDropdown from "./componentModules/CategoryDropdown.vue";
+import categoryService from "../services/CategoryService.js";
 
 export default {
   components: {
@@ -115,19 +129,21 @@ export default {
     CheckboxField,
     NumberField,
     FileUpload,
+    CategoryDropdown,
   },
   data() {
     return {
       item: {
         name: "",
-        category: "",
         purchaseDate: "",
         purchasePrice: null,
         value: null,
         isValuable: false,
         notes: "",
+        categoryId: null,
       },
       file: null,
+      categories: [],
       photoMetadata: {},
       photoId: null,
       photoUrl: null,
@@ -139,6 +155,13 @@ export default {
     };
   },
   methods: {
+    getCategories() {
+      const user = this.$store.state.user;
+      categoryService.getCategories(user.id).then((response) => {
+        this.categories = response.data.categories;
+        console.log(this.categories);
+      });
+    },
     renderFileUpload() {
       this.showFileUpload = true;
       this.isUpdatedPhoto = true;
@@ -157,6 +180,7 @@ export default {
       const itemId = this.$route.params.id;
       service.getItem(itemId).then((response) => {
         this.item = response.data;
+        console.log("item on DOM creation: ", this.item);
       });
     },
     getPhoto() {
@@ -195,6 +219,7 @@ export default {
           .toISOString()
           .split("T")[0];
       }
+      console.log("item: ", this.item);
       const user = this.$store.state.user;
       const itemId = Number(this.$route.params.id);
 
@@ -339,6 +364,7 @@ export default {
   },
   created() {
     this.$store.commit("SET_PAGE_TITLE", "Update Items");
+    this.getCategories();
     this.getItem();
     this.getPhoto();
     this.getPhotoUrl();
