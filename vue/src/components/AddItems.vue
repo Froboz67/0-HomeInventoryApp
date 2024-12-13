@@ -13,13 +13,19 @@
             placeholder="Name"
             required
           />
-          <text-field
-            label="Category:"
-            id="item-category"
-            v-model="item.category"
-            itemid="item-category"
-            placeholder="Category"
-          />
+          <div class="category-container">
+            <category-dropdown
+              label="Category"
+              id="item-category"
+              v-model="item.categoryId"
+              :options="categories"
+              optionKey="categoryId"
+              optionValue="categoryId"
+              optionLabel="categoryName"
+              required
+            />
+          </div>
+
           <div class="date-value-container">
             <date-field
               label="Purchase Date:"
@@ -80,6 +86,8 @@ import NumberField from "./componentModules/NumberField.vue";
 import FileUpload from "./componentModules/FileUpload.vue";
 import DateField from "./componentModules/DateField.vue";
 import CheckboxField from "./componentModules/CheckboxField.vue";
+import categoryService from "../services/CategoryService.js";
+import CategoryDropdown from "./componentModules/CategoryDropdown.vue";
 
 export default {
   components: {
@@ -89,6 +97,7 @@ export default {
     FileUpload,
     DateField,
     CheckboxField,
+    CategoryDropdown,
   },
   data() {
     FileUpload;
@@ -101,11 +110,20 @@ export default {
         value: null,
         isValuable: false,
         notes: "",
+        categoryId: null,
       },
       file: null,
+      categories: [],
     };
   },
   methods: {
+    getCategories() {
+      const user = this.$store.state.user;
+      categoryService.getCategories(user.id).then((response) => {
+        this.categories = response.data.categories;
+        console.log(this.categories);
+      });
+    },
     handleUploadedFile(file) {
       console.log("handleUploadedFile() Add Items");
       this.file = file;
@@ -116,6 +134,7 @@ export default {
           .toISOString()
           .split("T")[0];
       }
+
       service
         .saveItem(this.item)
         .then((response) => {
@@ -219,6 +238,7 @@ export default {
   },
   created() {
     this.$store.commit("SET_PAGE_TITLE", "Add Items");
+    this.getCategories();
   },
 };
 </script>

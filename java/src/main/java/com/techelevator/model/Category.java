@@ -1,17 +1,17 @@
 package com.techelevator.model;
 
-public class ItemCategory {
+public class Category {
 
     private int categoryId;
     private String categoryName;
     private Boolean isDefault;
     private int createdByUserId;
 
-    public ItemCategory() {
+    public Category() {
 
     }
 
-    public ItemCategory(int categoryId, String categoryName, Boolean isDefault, int createdByUserId) {
+    public Category(int categoryId, String categoryName, Boolean isDefault, int createdByUserId) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
         this.isDefault = isDefault;

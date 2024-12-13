@@ -2,7 +2,6 @@ package com.techelevator.dao;
 
 import com.techelevator.exception.DaoException;
 import com.techelevator.model.Item;
-import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -28,13 +27,15 @@ public class JdbcItemDao implements ItemDao{
     @Override
     public Item saveItem(Item item, int userId) {
 
+        System.out.println("Item object: " + item);
+
         final String sql ="INSERT INTO public.items(\n" +
-                "\tuser_id, i_name, category, purchase_date, purchase_price, i_value, is_valuable, notes)\n" +
-                "\tVALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING item_id";
+                "\tuser_id, i_name, category, purchase_date, purchase_price, i_value, is_valuable, notes, category_id)\n" +
+                "\tVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING item_id";
 
         try {
             Integer itemId = jdbcTemplate.queryForObject(sql, int.class, userId, item.getName(), item.getCategory(), item.getPurchaseDate(),
-                    item.getPurchasePrice(), item.getValue(), item.getValuable(), item.getNotes());
+                    item.getPurchasePrice(), item.getValue(), item.getValuable(), item.getNotes(), item.getCategory_id());
             if (itemId != null) {
                 item.setItemId(itemId);
             } else {
@@ -49,8 +50,9 @@ public class JdbcItemDao implements ItemDao{
     @Override
     public Item getItem(int itemId) {
         Item item = null;
-        final String sql = "SELECT item_id, user_id, i_name, category, purchase_date, purchase_price, i_value, is_valuable, notes, created_at, updated_at\n" +
-                "\tFROM public.items\n" +
+        final String sql = "SELECT i.item_id, i.user_id, i.i_name, c.category_name AS category, i.purchase_date, i.purchase_price, i.i_value, i.is_valuable, i.notes, i.created_at, i.updated_at, i.category_id\n" +
+                "\tFROM items AS i\n" +
+                "\tJOIN item_category AS c ON i.category_id = c.category_id\n" +
                 "\tWHERE item_id = ?";
         try {
             final SqlRowSet results = jdbcTemplate.queryForRowSet(sql, itemId);
@@ -65,8 +67,9 @@ public class JdbcItemDao implements ItemDao{
     @Override
     public Item getItem(int itemId, int userId) {
         Item item = null;
-        final String sql = "SELECT item_id, user_id, i_name, category, purchase_date, purchase_price, i_value, is_valuable, notes, created_at, updated_at\n" +
-                "\tFROM public.items\n" +
+        final String sql = "SELECT i.item_id, i.user_id, i.i_name, c.category_name AS category, i.purchase_date, i.purchase_price, i.i_value, i.is_valuable, i.notes, i.created_at, i.updated_at, i.category_id\n" +
+                "\tFROM items AS i\n" +
+                "\tJOIN item_category AS c ON i.category_id = c.category_id\n" +
                 "\tWHERE item_id = ?";
         try {
             final SqlRowSet results = jdbcTemplate.queryForRowSet(sql, itemId);
@@ -76,6 +79,7 @@ public class JdbcItemDao implements ItemDao{
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
         }
+        System.out.println("item from get method: " + item);
         return item;
     }
 
@@ -83,8 +87,9 @@ public class JdbcItemDao implements ItemDao{
     public List<Item> getAllItems(int userId) {
         final List<Item> itemsList = new ArrayList<>();
 
-        final String sql = "SELECT item_id, user_id, i_name, category, purchase_date, purchase_price, i_value, is_valuable, notes, created_at, updated_at\n" +
-                "\tFROM public.items\n" +
+        final String sql = "SELECT i.item_id, i.user_id, i.i_name, c.category_name AS category, i.purchase_date, i.purchase_price, i.i_value, i.is_valuable, i.notes, i.created_at, i.updated_at, i.category_id\n" +
+                "\tFROM items AS i\n" +
+                "\tJOIN item_category AS c ON i.category_id = c.category_id\n" +
                 "\tWHERE user_id = ? ORDER by i_name ASC;";
         try {
 
@@ -103,11 +108,11 @@ public class JdbcItemDao implements ItemDao{
         Item updatedItem = null;
         item.setUpdatedAt(LocalDateTime.now());
         final String sql = "UPDATE public.items\n" +
-                "\tSET i_name=?, category=?, purchase_date=?, purchase_price=?, i_value=?, is_valuable=?, notes=?, created_at=?, updated_at=?\n" +
+                "\tSET i_name=?, category=?, purchase_date=?, purchase_price=?, i_value=?, is_valuable=?, notes=?, created_at=?, updated_at=?, category_id=?\n" +
                 "\tWHERE item_id=?";
         try {
             int numberOfRowsAffected = jdbcTemplate.update(sql, item.getName(), item.getCategory(), item.getPurchaseDate(),
-                    item.getPurchasePrice(), item.getValue(), item.getValuable(), item.getNotes(), item.getCreatedAt(), item.getUpdatedAt(), item.getItemId());
+                    item.getPurchasePrice(), item.getValue(), item.getValuable(), item.getNotes(), item.getCreatedAt(), item.getUpdatedAt(), item.getCategory_id(), item.getItemId());
             updatedItem = getItem(item.getItemId(), item.getUserId());
             if (numberOfRowsAffected == 0) {
                 throw new DaoException("zero rows affected");
@@ -118,6 +123,7 @@ public class JdbcItemDao implements ItemDao{
         System.out.println(updatedItem);
         return updatedItem;
     }
+
     @Override
     public Item deleteItem(Item item, int userId) {
         final String aSql = "DELETE FROM public.item_photos\n" +
@@ -169,6 +175,7 @@ public class JdbcItemDao implements ItemDao{
         } else {
             item.setUpdatedAt(null);
         }
+        item.setCategory_id(rowSet.getInt("category_id"));
         return item;
     }
 

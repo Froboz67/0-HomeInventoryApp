@@ -21,6 +21,8 @@ public class Item {
     private String notes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    @JsonProperty("categoryId")
+    private int category_id;
 
 
     public Item() {
@@ -28,7 +30,7 @@ public class Item {
     }
 
     public Item(int itemId, int userId, String name, String category, LocalDate purchaseDate, BigDecimal purchasePrice,
-                BigDecimal value, Boolean isValuable, String notes, LocalDateTime createdAt, LocalDateTime updatedAt) {
+                BigDecimal value, Boolean isValuable, String notes, LocalDateTime createdAt, LocalDateTime updatedAt, int category_id) {
         this.itemId = itemId;
         this.userId = userId;
         this.name = name;
@@ -40,6 +42,7 @@ public class Item {
         this.notes = notes;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.category_id = category_id;
     }
 
     public int getItemId() {
@@ -130,6 +133,14 @@ public class Item {
         return updatedAt;
     }
 
+    public int getCategory_id() {
+        return category_id;
+    }
+
+    public void setCategory_id(int category_id) {
+        this.category_id = category_id;
+    }
+
     @Override
     public String toString() {
         return "Item{" +
@@ -144,6 +155,7 @@ public class Item {
                 ", notes='" + notes + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", category_id=" + category_id +
                 '}';
     }
 }
