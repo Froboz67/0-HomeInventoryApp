@@ -27,6 +27,7 @@
         <div class="descriptor">Category:</div>
         <div>{{ item.category }}</div>
         <div class="descriptor">Room:</div>
+        <div>{{ room.roomName }}</div>
         <div class="descriptor">Purchase Date:</div>
         <div class="date">
           {{ item.purchaseDate ? formatCreatedAt(item.purchaseDate) : "" }}
@@ -71,6 +72,7 @@ import service from "../services/ItemService";
 import { format } from "date-fns";
 import HeaderModule from "./componentModules/HeaderModule.vue";
 import isLoading from "./isLoading.vue";
+import RoomService from "../services/RoomService";
 
 export default {
   components: {
@@ -136,11 +138,28 @@ export default {
       const newDate = format(new Date(splitDate), "MMMM dd, yyyy");
       return newDate;
     },
+    getRoom() {
+      // const user = this.$store.user.id;
+      const itemId = this.$route.params.id;
+      console.log("item Id ", itemId);
+      this.isLoading = true;
+      RoomService.getRoom(itemId)
+        .then((response) => {
+          this.room = response.data;
+          this.isLoading = false;
+          console.log("room", this.room);
+        })
+        .catch((error) => {
+          console.log("Error getting the room data", error);
+          this.isLoading = false;
+        });
+    },
   },
+
   created() {
     this.$store.commit("SET_PAGE_TITLE", "Item Details");
     this.getItem();
-    // this.getPhoto();
+    this.getRoom();
     this.getPhotoUrl();
   },
 };

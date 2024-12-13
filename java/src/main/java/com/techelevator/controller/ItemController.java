@@ -42,15 +42,6 @@ public class ItemController {
     @PostMapping("/item")
     public ResponseEntity<Item> saveItem(@RequestBody Item item, Principal principal) {
 
-//        int userId = item.getUserId();
-//        System.out.println("userId = " + userId);
-//        System.out.println("userDao userId = " + userDao.getUserById(item.getUserId()));
-//        String username = principal.getName();
-//        User user = userDao.getUserByUsername(username);
-//        if (userId != user.getId()) {
-//            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-//        }
-
         User user = userDao.getUserByUsername(principal.getName());
         int id = user.getId();
         System.out.println("the user id is + " + id);

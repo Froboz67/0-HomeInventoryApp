@@ -64,7 +64,8 @@ CREATE TABLE item_category (
     category_id SERIAL PRIMARY KEY,
     category_name VARCHAR(50) NOT NULL UNIQUE,
     is_default BOOLEAN NOT NULL,
-    created_by_user_id INTEGER REFERENCES users(user_id)
+    created_by_user_id INTEGER REFERENCES users(user_id),
+	
 );
 
 
@@ -77,6 +78,8 @@ COMMIT TRANSACTION;
 --ADD COLUMN category_id INTEGER;
 
 
+
+
 -- keeps the names in the two tables constant
 --UPDATE items
 --SET category_id = ic.category_id
@@ -84,6 +87,6 @@ COMMIT TRANSACTION;
 --WHERE items.category = ic.category_name;
 
 --set foreign key constraint for items table
---ALTER TABLE items
---ADD CONSTRAINT fk_item_category
---FOREIGN KEY (category_id) REFERENCES item_category(category_id);
+-- ALTER TABLE items
+-- ADD CONSTRAINT fk_item_category
+-- FOREIGN KEY (category_id) REFERENCES item_category(category_id);

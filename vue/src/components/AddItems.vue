@@ -13,7 +13,7 @@
             placeholder="Name"
             required
           />
-          <div class="category-container">
+          <div class="dropdown-container">
             <category-dropdown
               label="Category"
               id="item-category"
@@ -22,6 +22,16 @@
               optionKey="categoryId"
               optionValue="categoryId"
               optionLabel="categoryName"
+              required
+            />
+            <rooms-dropdown
+              label="Room"
+              id="room-room-name"
+              v-model="room.roomId"
+              :options="rooms"
+              optionKey="roomId"
+              optionValue="roomId"
+              optionLabel="roomName"
               required
             />
           </div>
@@ -88,6 +98,8 @@ import DateField from "./componentModules/DateField.vue";
 import CheckboxField from "./componentModules/CheckboxField.vue";
 import categoryService from "../services/CategoryService.js";
 import CategoryDropdown from "./componentModules/CategoryDropdown.vue";
+import RoomsDropdown from "./componentModules/RoomsDropdown.vue";
+import RoomService from "../services/RoomService.js";
 
 export default {
   components: {
@@ -98,6 +110,7 @@ export default {
     DateField,
     CheckboxField,
     CategoryDropdown,
+    RoomsDropdown,
   },
   data() {
     FileUpload;
@@ -114,9 +127,23 @@ export default {
       },
       file: null,
       categories: [],
+      rooms: [],
+      room: {
+        roomId: null,
+        roomName: "",
+        createdByUserId: null,
+        default: Boolean,
+      },
     };
   },
   methods: {
+    getRooms() {
+      const user = this.$store.state.user;
+      RoomService.getRooms(user.id).then((response) => {
+        this.rooms = response.data.rooms;
+        console.log("rooms ", this.rooms);
+      });
+    },
     getCategories() {
       const user = this.$store.state.user;
       categoryService.getCategories(user.id).then((response) => {
@@ -142,6 +169,7 @@ export default {
             const itemId = response.data.itemId;
             // don't think this variable is used or needed
             const photoName = response.data.name;
+            this.saveRoom(itemId);
             alert("item saved successfully!");
 
             // checking for the existence of a photo file
@@ -195,6 +223,18 @@ export default {
           alert("there was a problem saving the photo");
         });
     },
+    saveRoom(itemId) {
+      RoomService.saveRoom(itemId)
+        .then((response) => {
+          if (response.status === 201) {
+            alert("room saved to db");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          alert("there was a problem saving the room");
+        });
+    },
     uploadPhoto(itemId) {
       console.log("upload file on initial create ", this.file);
       if (!this.file) return;
@@ -239,6 +279,7 @@ export default {
   created() {
     this.$store.commit("SET_PAGE_TITLE", "Add Items");
     this.getCategories();
+    this.getRooms();
   },
 };
 </script>
@@ -266,6 +307,12 @@ export default {
   gap: 0.2rem;
 }
 .date-value-container {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 1rem;
+  align-items: center;
+}
+.dropdown-container {
   display: grid;
   grid-template-columns: auto auto;
   column-gap: 1rem;
